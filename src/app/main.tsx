@@ -12,6 +12,8 @@ const TopControls = () => {
   const {isOpen, setIsOpen} = useCart()
   const { sdk, connected, connecting, provider, chainId } = useSDK();
 
+  console.log('chainId', chainId, 'provider', provider)
+
   const accountOptions = [ {
     label: 'Sign in as vendor',
     value: 'vendor-signin',
@@ -30,6 +32,7 @@ const TopControls = () => {
     accountOptions.unshift({
       label: 'Disconnect Wallet',
       onClick: () => {
+        console.log('disconnecting')
         sdk?.disconnect()
       },
       value: 'metamask-disconnect'

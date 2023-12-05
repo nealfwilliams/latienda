@@ -5,13 +5,18 @@ import { useCart } from "@/hooks/useCart"
 import { useSDK } from "@metamask/sdk-react"
 import { Product } from "@prisma/client"
 import React, { useContext } from "react"
+import { ethers } from 'ethers'
 
 export const Cart = () => {
   const { cart, isOpen } = useCart()
-  const { sdk, connected, connecting, provider, chainId } = useSDK();
+  const { sdk, connected, connecting, provider, chainId, account } = useSDK();
 
   const onCheckout = () => {
-    // TO-DO Checkout logic goes here
+    console.log('ethers', ethers)
+    console.log('ethereum', window.ethereum)
+    console.log('chainId', chainId, 'account', account)
+
+    // GAVIN'S CODE GOES HERE
   }
   
   if (!isOpen) {
@@ -74,7 +79,11 @@ export const Cart = () => {
 
       <Column grow={0} justify={'flex-end'} align="center" sx={{p: 5}}>
         { connected ? (
-          <Button>
+          <Button
+            onClick={() => {
+              onCheckout()
+            }} 
+          >
             Check Out
           </Button>
         ) : (
