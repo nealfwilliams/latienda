@@ -1,0 +1,77 @@
+import { Canvas, Meta } from '@storybook/blocks';
+
+import * as NavMenuStories from './NavMenu.stories';
+
+<Meta of={NavMenuStories} />
+
+# Overview
+Using the NavMenu component involves a moving parts:
+- `MenuProvider` -- this component provide
+- `useMenu` -- this hook is used to pull in context from the 
+
+## MenuProvider
+This component should wrap your React tree that is rendered your `NavMenu`.
+The `menu` prop passed to this component should match the type:
+```ts
+type Menu = {
+  orientation: MENU_ORIENTATION.HORIZONTAL | MENU_ORIENTATION.VERTICAL,
+  items: {
+    id: string // a unique slug for this menu item,
+    label: string // String that will be rendered to represent this option
+    action: {
+      type: MENU_ACTION_TYPE.LINK | MENU_ACTION_TYPE.SUBMENU,
+      to?: string, // Link menu items need a URL to navigate to
+
+      // Link menu items that trigger a submenu should specify the submenu
+      // following the same type as the top level menu
+      submenu?: Menu
+    } 
+  }[]
+}
+```
+
+## useMenu
+The `useMenu` hook is used to inject the state management provided by the `MenuProvider` compenent
+into your components. This is needed to contruct the top level controls for a menu.
+
+The most import abstractions that `useMenu` provides are the functions:
+- `getMenuProps` -- add the props returned by this function the wrapper around your menu
+- `getMenuItemProps` -- add the props returned by this function to menuItems. When calling this function,
+pass an array of the item ids that specify the path to this menu item within the `menu` object
+
+## NavMenu
+This component can be place anywhere with the `MenuProvider` component and will be rendered when the applicable
+top level controls have been activated.
+
+## Demo
+```tsx
+
+const TopLevelControls = () => {
+  const {menu, getMenuProps, getMenuItem } = useMenu();
+
+  return (
+    <Row {...getMenuProps()}>
+      {menu.items.map((menuItem) => (
+        <Button
+          {...getMenuItemProps([menuItem.id])}
+          sx={{ m: 1 }}
+          key={menuItem.id}
+        >
+          {menuItem.label}
+        </Button>
+      ))}
+    </Row>
+  )
+}
+
+const DemoMenu = () => (
+  <MenuProvider menu={demoMenu}>
+    <TopLevelControls />
+    <NavMenu />
+  </MenuProvider>
+)
+
+
+
+
+```

@@ -1,0 +1,44 @@
+# Hesburgh Library Design System
+
+The goals of this design system are:
+- to establish a standard set of design values and patterns to be used across Hesburgh Library's web projects
+- to deliver a set of reusable components to reduce developer work, improve the maintainability of our codebases,
+and to ensure consistent functionality and UX across our projects
+- to ensure all UI work done by Hesburgh Library is fully accessible to those with disabilities
+
+## Theme
+This design system uses a theme to tokenize the style values for the components included in this library.
+This library also exposes these values for any additional downstream styling that may be needed.
+
+Interally, this library uses [Theme UI](https://theme-ui.com/), a React library that supports applying styles directly to React
+components by referencing theme values. `Theme UI` uses the [emotion](https://emotion.sh/docs/introduction) library
+internally to extract defined styles into CSS stylesheets and add them into the DOM.
+
+With `Theme UI`, styles are added to native HTML elements (div, p, etc.) using the `sx` property.
+The `sx` prop supports all the styles supported by React's vanilla `styles` props. It also supports
+several "theme-aware" properties that will pull values from the theme. [See full documentation](https://theme-ui.com/sx-prop).
+
+The components included in this library all use `sx` prop that works identically to the Theme UI `sx` property
+and will pass styles to the underlying native HTML elements.
+
+### Color
+The theme introduces a color palette of standardized colors. [See full palette.](/story/theme-colors--default)
+
+### Typography
+This component library assigns elements with appropriate text styles that will need minimal
+customization and overrides. The typography assigned to each element is determined by the purpose
+of the element in the document and its intended prominence.
+
+That are three categories of typography that an element may fall under:
+
+#### Heading
+Heading typography is used for text elements that serve as landmarks that label for sections of the document.
+[View heading styles.](/docs/elements-heading--docs).
+
+#### Controls
+Control typography is used for text elements that need to stand out as actionable, such as buttons, links, and form labels.
+[View control styles.](/docs/elements-label--docs).
+
+#### Paragraph
+Paragraph typography is the default for text elements that neither actionable nor section headings.
+[View paragraph styles.](/docs/elements-paragraph--docs).

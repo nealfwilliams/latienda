@@ -1,0 +1,39 @@
+import { Canvas, Meta } from '@storybook/blocks';
+
+import * as IconStories from './Icon.stories';
+
+<Meta of={IconStories} />
+
+# Overview
+The icons intended to be used with this library are the Material icons provided by `@mui/icons-material`.
+This icon set can be searched [here](https://mui.com/material-ui/material-icons/).
+
+The icons are not included in this bundle as a direct dependency to reduce bundle size and to support tree
+shaking by the applications using this library. 
+
+Projects intending to use this library with icons need to install `@mui/icons-material` as well as the
+other peer dependencies listed by this library's `package.json` file.
+
+## Icon component
+This library includes a basic `Icon` component that supports styling MUI icons with this library's theme values.
+This approach is recommended over including MUI components directly in your project so icons will look consistent across
+ND's web products.
+
+In order to specify which icon to use, the MUI component should be passed to the `icon` prop of the `Icon` component.
+
+```tsx
+import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
+
+<Icon icon={AccessAlarmIcon} />
+```
+
+### Basic usage
+<Canvas of={IconStories.Default} />
+
+### Customizing color
+<Canvas of={IconStories.CustomColor} />
+
+## Button icons
+Icons within buttons, or clickable icons that serve as buttons, should go through the `Button` component.
+In this case, the icon component from MUI should be passed to the `primaryIcon`, `leftIcon`, or `rightIcon`
+prop depending on whether the icon is the primary label for the button or if it is text to other button text.
