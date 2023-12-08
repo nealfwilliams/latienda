@@ -1,10 +1,11 @@
 /** @jsxImportSource theme-ui */
-import React, { Key } from 'react'
+import React from 'react'
 import { COLOR } from '../../..'
 import { StyledElementProps } from '../../../theme'
 import { TYPOGRAPHY_TYPE, getTypographyStyles } from '../../../theme/typography'
 import {
   BasicOption,
+  Key,
   RenderOption,
   defaultRenderOption,
   getOptionId,

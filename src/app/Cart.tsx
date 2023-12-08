@@ -3,33 +3,35 @@ import { BOX_SHADOW, Z_INDEX } from "@/baseComponents/theme/custom"
 import { PLACEHOLDER_IMAGE } from "@/constants"
 import { useCart } from "@/hooks/useCart"
 import { useSDK } from "@metamask/sdk-react"
-import { Product } from "@prisma/client"
 import React, { useContext } from "react"
 import { ethers } from 'ethers'
-import {json} from "json"
-import {
-  recoverPersonalSignature 
-} from '@metamask/eth-sig-util'
-
 
 export const Cart = () => {
   const { cart, isOpen } = useCart()
   const { sdk, connected, connecting, provider, chainId, account } = useSDK();
 
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  const _window = window as any
+
   const onCheckout = () => {
     // GAVIN'S CODE GOES HERE
     async function main() {
-      // Get the provider and signer from the browser window
+      // Get the provider and signer fyrom the browser window
       //await window.ethereum.enable();
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const accounts = await window.ethereum.request({
+      const provider = new ethers.BrowserProvider(_window.ethereum);
+      const _accounts = await _window.ethereum.request({
         method: "eth_requestAccounts",
-      });
+      })
+      const accounts: any = _accounts || [] 
+
       // console.log("accounts", accounts[0]);
       const signer = await provider.getSigner(0);
       console.log("accounts[0]", accounts[0]);
-       console.log("provider= ", provider);
-       console.log("signer= ", signer);
+      console.log("provider= ", provider);
+      console.log("signer= ", signer);
       const amount = ethers.parseEther("0.000000000000000002");
       const obj = [
         {

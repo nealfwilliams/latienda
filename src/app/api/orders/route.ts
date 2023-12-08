@@ -21,7 +21,7 @@ export async function POST(
 
   await prisma.order.create({
     data: {
-      userId: user.id,
+      buyerId: user.id,
       status: OrderStatus.IN_PROGRESS,
       summary: fields.summary,
       vendorId: fields.vendorId,
