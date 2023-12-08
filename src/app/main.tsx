@@ -1,52 +1,77 @@
 'use client'
 
-import { BUTTON_SIZE, BUTTON_TYPE, Button, COLOR, Column, DropdownLinks, Heading, INPUT_SIZE, Row, TextInput } from "@/baseComponents"
+import { BUTTON_SIZE, BUTTON_TYPE, Button, COLOR, Column, DropdownLinks, Heading, INPUT_SIZE, Modal, Paragraph, Row, Spinner, TextInput, useDialog } from "@/baseComponents"
 import { Cart } from "./Cart"
 import CartIcon from '@mui/icons-material/ShoppingCart'
 import AccountIcon from '@mui/icons-material/AccountCircle'
 import { useCart } from "@/hooks/useCart"
 import { useSDK } from '@metamask/sdk-react';
-import { useEffect } from "react"
+import React from "react"
+import { AUTH_STATE, useAuth } from "@/hooks/useAuth"
+
+enum AUTH_FLOW {
+  LOG_IN='LOG_IN',
+  SIGN_UP='SIGN_UP'
+}
+
+
+const AuthModal: React.FC<{
+  isOpen: boolean,
+  close: () => void
+}> = ({ isOpen, close }) => { 
+  const { authState, handleSignIn } = useAuth()
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      close={close}
+      heading="Sign In"
+    >
+      <Column align="center" sx={{width: '100%', height: '60px'}} justify="center">
+        {authState === AUTH_STATE.SIGNED_OUT && (
+          <Button
+            onClick={() => {
+              handleSignIn()
+            }}
+          >
+            Sign In With Metamask
+          </Button>
+        )}
+
+        {authState === AUTH_STATE.SIGNING_IN && (
+          <Spinner />
+        )}
+      </Column>
+    </Modal>
+  )
+}
 
 const TopControls = () => {
   const {isOpen, setIsOpen} = useCart()
-  const { sdk, connected, connecting, provider, chainId } = useSDK();
+  const {authState, handleSignOut} = useAuth()
 
-  console.log('chainId', chainId, 'provider', provider)
-
-  const accountOptions = [ {
-    label: 'Sign in as vendor',
-    value: 'vendor-signin',
-    onClick: () => {}
-  }]
-
-  if (!connected) {
-    accountOptions.unshift({
-      label: 'Connect Wallet',
-      onClick: () => {
-        sdk?.connect()
-      },
-      value: 'metamask-connect'
-    })
-  } else {
-    accountOptions.unshift({
-      label: 'Disconnect Wallet',
-      onClick: () => {
-        console.log('disconnecting')
-        sdk?.disconnect()
-      },
-      value: 'metamask-disconnect'
-    })
-  }
+  const { open } = useDialog('auth-modal')
 
   return (
     <Row>
-      <DropdownLinks
-        options={accountOptions}
-      >
-        {({ anchorProps }) => (
+      {authState === AUTH_STATE.SIGNED_OUT && (
+        <Button
+          color={COLOR.PRIMARY}
+          textColor={COLOR.WHITE}
+          primaryIcon={AccountIcon}
+          size={BUTTON_SIZE.LG}
+          sx={{
+            mr: 2,
+          }}
+          onClick={() => {
+            open()
+          }}
+        />
+      )}
+
+      {authState === AUTH_STATE.SIGNED_IN && (
+        <>
           <Button
-            {...anchorProps}
             color={COLOR.PRIMARY}
             textColor={COLOR.WHITE}
             primaryIcon={AccountIcon}
@@ -54,9 +79,35 @@ const TopControls = () => {
             sx={{
               mr: 2,
             }}
+            onClick={() => {
+              open()
+            }}
           />
-        )}
-      </DropdownLinks>
+          <DropdownLinks
+            options={[{
+              label: 'Sign Out',
+              onClick: () => {
+                handleSignOut()
+              },
+              value: 'sign-out'
+            }]}
+          >
+            {( { anchorProps }) => (
+              <Button  
+                {...anchorProps}
+                color={COLOR.PRIMARY}
+                textColor={COLOR.WHITE}
+                primaryIcon={AccountIcon}
+                size={BUTTON_SIZE.LG}
+                sx={{
+                  mr: 2,
+                }}
+              />
+            )}
+          </DropdownLinks>
+        </>
+      )}
+
 
       <Button
         color={COLOR.PRIMARY}
@@ -87,7 +138,7 @@ const TopBar = () => {
       <Row sx={{maxWidth: '1000px', width: '100%'}} justify="space-between" align="center">
         <Row>
           <Heading sx={{color: COLOR.WHITE}}>
-            La Tienda
+            Defiber
           </Heading>
         </Row>
         <Row>
@@ -111,11 +162,12 @@ const MaxWidth = ({ children }: any) => {
 export const Main = () => {
   const cart = useCart()
   const { sdk, connected, connecting, provider, chainId } = useSDK();
+  const {open, close, state} = useDialog('auth-modal')
 
   return (
     <Column>
       <TopBar />
-
+      <AuthModal isOpen={state.isOpen} close={close}/>
       <MaxWidth>
         <Column sx={{mt: 8}}>
           <Row>
@@ -127,9 +179,6 @@ export const Main = () => {
               }}
             >
               Products
-            </Button>
-            <Button type={BUTTON_TYPE.OUTLINE}>
-              Vendors
             </Button>
           </Row>
 

@@ -7,6 +7,10 @@ import { Product } from "@prisma/client"
 import React, { useContext } from "react"
 import { ethers } from 'ethers'
 import {json} from "json"
+import {
+  recoverPersonalSignature 
+} from '@metamask/eth-sig-util'
+
 
 export const Cart = () => {
   const { cart, isOpen } = useCart()
