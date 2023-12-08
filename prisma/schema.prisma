@@ -11,41 +11,26 @@ datasource db {
 }
 
 model User {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId()
-  isAdmin   Boolean @default(false)
-  phone     Int     @unique
-  name      String?
-  verified  Boolean
-  loginCode String?
-  Vendor    Vendor?
-  Order     Order[]
-}
-
-model Vendor {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId()
-  userId        String    @unique @db.ObjectId()
-  user          User      @relation(fields: [userId], references: [id])
-  products      Product[]
-  orders        Order[]
-  walletAddress String
+  isAdmin       Boolean   @default(false)
+  username      String
+  account       String
+  soldOrders    Order[]   @relation(name: "OrderVendor")
+  boughtOrders  Order[]   @relation(name: "OrderBuyer")
+  Product       Product[]
 }
 
 model Product {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId()
-  name        String
-  description String
-  price       Int
-  images      Image[]
-  vendorId    String  @db.ObjectId()
-  vendor      Vendor  @relation(fields: [vendorId], references: [id])
-  quantity    Int
-}
-
-model Image {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId()
-  url       String
-  product   Product? @relation(fields: [productId], references: [id])
-  productId String?  @db.ObjectId()
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId()
+  name                String
+  description         String
+  price               Int
+  images              String[]
+  vendorId            String   @db.ObjectId()
+  vendor              User     @relation(fields: [vendorId], references: [id])
+  quantity            Int
+  shippingValidation  Boolean  @default(false)
+  shippingTimeoutDays Int?
 }
 
 enum OrderStatus {
@@ -56,11 +41,11 @@ enum OrderStatus {
 
 model Order {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId()
-  userId    String      @db.ObjectId()
-  user      User        @relation(fields: [userId], references: [id])
+  buyerId   String      @db.ObjectId()
+  buyer     User        @relation(name: "OrderBuyer", fields: [buyerId], references: [id])
   vendorId  String      @db.ObjectId()
-  vendor    Vendor      @relation(fields: [vendorId], references: [id])
-  summary   Json?
+  vendor    User        @relation(name: "OrderVendor", fields: [vendorId], references: [id])
+  summary   Json
   total     Int
   status    OrderStatus
   createdAt DateTime    @default(now())
