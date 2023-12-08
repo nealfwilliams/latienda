@@ -1,15 +1,15 @@
-import { parseAuthHeader } from '@/middleware'
-import { OrderStatus, PrismaClient } from '@prisma/client'
 import { headers } from 'next/headers'
 import { client } from '../client'
+import { JsonResponse, verifyRequest } from '../utils'
 
 export async function POST(
   request: Request,
 ) {
   const headersList = headers()
+
   const fields = await request.json()
 
-  const user = await parseAuthHeader(headersList)
+  const user = await verifyRequest()
 
   if (!user) {
     return new Response('Unauthorized', {
@@ -28,7 +28,7 @@ export async function POST(
     }
   })
 
-  return Response.json({
+  return JsonResponse({
     product
   }) 
 }
@@ -47,7 +47,7 @@ export async function GET(
     } : undefined,
   })
 
-  return Response.json({
+  return JsonResponse({
     products
   })
 }

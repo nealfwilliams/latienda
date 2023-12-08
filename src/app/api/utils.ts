@@ -1,5 +1,47 @@
+import { headers } from "next/headers"
 import { client } from "./client"
 import crypto from 'crypto'
+import { recoverPersonalSignature } from "@metamask/eth-sig-util"
+import { SIGN_IN_MESSAGE } from "@/constants"
+
+export const JsonResponse = (data: any) => {
+  return new Response(JSON.stringify(data), {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+}
+
+export const verifyRequest = async () => {
+  const headersList = headers()
+
+  const account = headersList.get('x-account')
+  const signature = headersList.get('x-signature')
+  console.log(Array.from(headersList.keys()), account, signature)
+
+
+  if (!account || !signature) {
+    return false
+  }
+
+  const recoveredAccount = await recoverPersonalSignature({
+    data: SIGN_IN_MESSAGE,
+    signature,
+  })
+
+  if (account !== recoveredAccount) {
+    return false
+  }
+
+  const user = await client.user.findFirst({
+    where: {
+      account
+    }
+  })
+
+  return user
+}
+
 
 // Creates a signed hash of key using secret key 
 export const hashKey = (key: string) => {

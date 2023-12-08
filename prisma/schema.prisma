@@ -40,16 +40,20 @@ enum OrderStatus {
 }
 
 model Order {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId()
-  buyerId   String      @db.ObjectId()
-  buyer     User        @relation(name: "OrderBuyer", fields: [buyerId], references: [id])
-  vendorId  String      @db.ObjectId()
-  vendor    User        @relation(name: "OrderVendor", fields: [vendorId], references: [id])
-  summary   Json
-  total     Int
-  status    OrderStatus
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId()
+  buyerId        String      @db.ObjectId()
+  buyer          User        @relation(name: "OrderBuyer", fields: [buyerId], references: [id])
+  vendorId       String      @db.ObjectId()
+  vendor         User        @relation(name: "OrderVendor", fields: [vendorId], references: [id])
+  summary        Json
+  total          Int
+  status         OrderStatus
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  hasBeenPaid      Boolean     @default(false)
+  hasBeenShipped   Boolean     @default(false)
+  hasBeenDelivered Boolean     @default(false)
+  fulfilled        Boolean     @default(false)
 }
 
 model AuthKey {

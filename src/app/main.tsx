@@ -8,6 +8,8 @@ import { useCart } from "@/hooks/useCart"
 import { useSDK } from '@metamask/sdk-react';
 import React from "react"
 import { AUTH_STATE, useAuth } from "@/hooks/useAuth"
+import { useRouter } from "next/navigation"
+import { useProducts } from "@/hooks/useProducts"
 
 enum AUTH_FLOW {
   LOG_IN='LOG_IN',
@@ -49,6 +51,7 @@ const AuthModal: React.FC<{
 const TopControls = () => {
   const {isOpen, setIsOpen} = useCart()
   const {authState, handleSignOut} = useAuth()
+  const router = useRouter()
 
   const { open } = useDialog('auth-modal')
 
@@ -80,7 +83,7 @@ const TopControls = () => {
               mr: 2,
             }}
             onClick={() => {
-              open()
+              router.push('/home')
             }}
           />
           <DropdownLinks
@@ -163,6 +166,7 @@ export const Main = () => {
   const cart = useCart()
   const { sdk, connected, connecting, provider, chainId } = useSDK();
   const {open, close, state} = useDialog('auth-modal')
+  const { products, query: productQuery, setQuery: setProductQuery } = useProducts()
 
   return (
     <Column>
@@ -185,7 +189,8 @@ export const Main = () => {
           <Row sx={{mt: 6}}>
             <TextInput
               label="Search"
-              value=""
+              value={productQuery}
+              onChange={setProductQuery}
               size={INPUT_SIZE.LG}
               placeholder="Search for products..."
               sx={{

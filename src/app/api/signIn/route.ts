@@ -1,6 +1,7 @@
 import { SIGN_IN_MESSAGE } from '@/constants';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util'
 import { PrismaClient } from '@prisma/client'
+import { JsonResponse } from '../utils';
 
 const prisma = new PrismaClient()
 
@@ -32,7 +33,7 @@ export async function POST(
   })
 
   if (user) {
-    return Response.json({
+    return JsonResponse({
       user: {
         username: user.username,
         account: user.account
@@ -48,7 +49,7 @@ export async function POST(
       }
     })
 
-    return Response.json({
+    return JsonResponse({
       user: {
         username: 'temp-username',
         account

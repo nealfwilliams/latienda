@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import { DetailedHTMLProps, PropsWithChildren } from 'react'
 import { ThemeUICSSObject, ThemeUIProvider, useThemeUI } from 'theme-ui'
 
 import {
@@ -51,10 +51,11 @@ export type StyledElementProps<
   E extends Element,
   CustomProps = object,
   Children = React.ReactNode,
-> = {
+> =
+{
   sx?: StylesProp
   children?: Children
-} & Omit<React.HTMLAttributes<E>, 'children' | 'onChange'> &
+} & Omit<React.HTMLAttributes<E>, 'children' | 'onChange' | 'size'> &
   CustomProps & {
     htmlFor?: string
   }
