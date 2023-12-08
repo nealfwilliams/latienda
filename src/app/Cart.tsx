@@ -20,7 +20,7 @@ export const Cart = () => {
     // GAVIN'S CODE GOES HERE
     async function main() {
       // Get the provider and signer fyrom the browser window
-      //await window.ethereum.enable();
+      //await window.ethereum.enable(); //watch out for typing issues with window. 
       const provider = new ethers.BrowserProvider(_window.ethereum);
       const _accounts = await _window.ethereum.request({
         method: "eth_requestAccounts",
