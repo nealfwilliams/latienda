@@ -14,6 +14,8 @@ export const Cart = () => {
     return null
   }
 
+  console.log('test')
+
   const _window = window as any
 
   const onCheckout = () => {
@@ -21,6 +23,7 @@ export const Cart = () => {
     async function main() {
       // Get the provider and signer fyrom the browser window
       //await window.ethereum.enable(); //watch out for typing issues with window. 
+      //test
       const provider = new ethers.BrowserProvider(_window.ethereum);
       const _accounts = await _window.ethereum.request({
         method: "eth_requestAccounts",
