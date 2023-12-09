@@ -1,4 +1,4 @@
-export const API_ROOT = process.env.NODE_ENV === 'production' ? 'https://api.example.com' : 'http://localhost:3000'
+export const API_ROOT = process.env.NODE_ENV === 'production' ? 'https://defiber.io' : 'http://localhost:3000'
 
 export const LOGO = 'https://storage.googleapis.com/defiber-static/defiber%20Main%20Logo.png'
 
