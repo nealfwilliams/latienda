@@ -1,14 +1,15 @@
 import { SIGN_IN_MESSAGE } from '@/constants';
 import { recoverPersonalSignature } from '@metamask/eth-sig-util'
 import { PrismaClient } from '@prisma/client'
-import { JsonResponse } from '../utils';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const prisma = new PrismaClient()
 
 export async function POST(
-  request: Request,
+  request: NextApiRequest,
+  response: NextApiResponse
 ) {
-  const fields = await request.json()
+  const fields = await request.body
 
   const account = fields.account
   const signature = fields.signature
@@ -19,7 +20,7 @@ export async function POST(
   })
 
   if (account !== recoveredAccount) {
-    return new Response('Unauthorized', {
+    response.status(401).json({
       status: 401,
       statusText: 'Unauthorized',
     })
@@ -33,7 +34,7 @@ export async function POST(
   })
 
   if (user) {
-    return JsonResponse({
+    response.status(200).json({
       user: {
         username: user.username,
         account: user.account
@@ -49,11 +50,20 @@ export async function POST(
       }
     })
 
-    return JsonResponse({
+    response.status(200).json({
       user: {
         username: 'temp-username',
         account
       }
     })
+  }
+}
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method === 'POST') {
+    await POST(req, res)
   }
 }

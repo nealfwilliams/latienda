@@ -1,5 +1,6 @@
-import { Button, COLOR, Column, EmptyState, Row } from "@/baseComponents"
+import { BUTTON_SIZE, BUTTON_TYPE, Box, Button, COLOR, Column, EmptyState, FONT_SIZE, GROUP_TYPE, Group, HEADING_SIZE, Heading, INPUT_SIZE, LABEL_SIZE, Label, Paragraph, Row, TYPOGRAPHY_TYPE, TextInput } from "@/baseComponents"
 import { BOX_SHADOW, Z_INDEX } from "@/baseComponents/theme/custom"
+import TrashIcon from '@mui/icons-material/Delete'
 import { PLACEHOLDER_IMAGE } from "@/constants"
 import { useCart } from "@/hooks/useCart"
 import { useSDK } from "@metamask/sdk-react"
@@ -13,8 +14,6 @@ export const Cart = () => {
   if (typeof window === 'undefined') {
     return null
   }
-
-  console.log('test')
 
   const _window = window as any
 
@@ -1100,7 +1099,10 @@ export const Cart = () => {
   const total = cart ? cart.reduce((acc, item) => acc + (item.quantity * item.product.price), 0) : 0
 
   return (
-    <Column sx={{
+    <Group sx={{
+      display: 'flex',
+      my: 0,
+      flexDirection: 'column',
       position: 'fixed',
       top: '64px',
       right: 0,
@@ -1111,7 +1113,8 @@ export const Cart = () => {
       zIndex: Z_INDEX.ELEVATED,
       p: 4
     }}>
-      <Column grow={1}>
+      <Heading size={HEADING_SIZE.SM}>Your Cart</Heading>
+      <Column grow={1} sx={{mt: 4}}>
         {cart && cart.length === 0 && (
           <EmptyState omitIcon>Your cart is empty.</EmptyState>
         )}
@@ -1119,39 +1122,66 @@ export const Cart = () => {
         {cart && cart.length > 0 && (
           <>
             {cart.map((item) => (
-              <Row>
-                <Column>
-                  <img src={PLACEHOLDER_IMAGE} alt={item.product.name} />
-                </Column>
-                <Column>
-                  <Row>
-                    <Column>
-                      {item.product.name}
-                    </Column>
-                    <Column>
-                      {item.quantity}
-                    </Column>
-                    <Column>
-                      ${item.quantity * item.product.price}
-                    </Column>
-                  </Row>
-                </Column>
-              </Row>
+              <Group type={GROUP_TYPE.GROUP}>
+                <Row>
+                  <Column>
+                    <Box sx={{boxShadow: BOX_SHADOW.EMPHASIZED}}>
+                      <img
+                        src={PLACEHOLDER_IMAGE}
+                        alt={item.product.name}
+                        style={{
+                          width: '100px',
+                          height: '100px',
+                          objectFit: 'cover'
+                        }}
+                      />
+                    </Box>
+                  </Column>
+                  <Column sx={{ml: 4}}>
+                    <Row>
+                      <Label sx={{fontSize: FONT_SIZE.MD}}>{item.product.name}</Label>
+                    </Row>
+                    <Row align="center">
+                      <TextInput
+                        disabled
+                        label="Qty"
+                        size={INPUT_SIZE.SM}
+                        type="number"
+                        value={item.quantity.toString()}
+                        sx={{mt: 3, mr: 1, width: '60px'}}
+                      />
+                      x ${item.product.price} = ${item.quantity * item.product.price}.00
+                      <Button
+                        type={BUTTON_TYPE.TEXT}
+                        primaryIcon={TrashIcon}
+                        color={COLOR.ND_TERTIARY_4}
+                        size={BUTTON_SIZE.LG}
+                        sx={{
+                          ml: 2
+                        }}
+                      />
+                    </Row>
+                  </Column>
+                </Row>
+              </Group>
             ))}
-            <Row>
-              <Column>
-                Total
-              </Column>
-              <Column>
-                {total}
-              </Column>
-            </Row>
+
           </>
         )}
 
       </Column>
 
       <Column grow={0} justify={'flex-end'} align="center" sx={{p: 5}}>
+        <Group type={GROUP_TYPE.GROUP}>
+          <Row>
+            <Label sx={{mr: 2}} size={LABEL_SIZE.LG}>
+              Total: 
+            </Label>
+            <Paragraph typography={TYPOGRAPHY_TYPE.CONDENSED_TEXT_LARGE}>
+              ${total}.00
+            </Paragraph>
+          </Row>
+        </Group>
         { connected ? (
           <Button
             onClick={() => {
@@ -1170,7 +1200,6 @@ export const Cart = () => {
           </Button>
         ) }
       </Column>
-
-    </Column>
+    </Group>
   )
 }

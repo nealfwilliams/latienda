@@ -1,8 +1,10 @@
 'use client'
 
+import { useState } from "react"
+import MoneyIcon from '@mui/icons-material/AttachMoney'
+
 import { Button, Column, Group, HEADING_SIZE, Heading, TextInput } from "@/baseComponents"
 import { useAuth } from "@/hooks/useAuth"
-import { useState } from "react"
 
 export const Main = () => {
   const {signature, account} = useAuth()
@@ -56,6 +58,8 @@ export const Main = () => {
         />
         <TextInput
           label="Product Price"
+          leftIcon={MoneyIcon}
+          type="number"
           value={productPrice.toString()}
           sx={{mt: 4}}
           onChange={(value) => {
