@@ -90,7 +90,7 @@ export const Heading: React.FC<HeaderProps> = ({
         py: 0,
         borderBottom: underline ? 'solid 2px' : undefined,
         borderBottomColor: underlineColor ? underlineColor : COLOR.SECONDARY,
-        color: COLOR.PRIMARY,
+        color: COLOR.TEXT,
         ...getTypographyStyles(typography),
         ...sx,
       }}

@@ -23,17 +23,14 @@ export const useProducts = () => {
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query, 500)
 
-  console.log(PRODUCTS_CACHE_KEY, debouncedQuery)
-
   // Debounce updates to the query
   const { data, isLoading, error} = useQuery({
     queryKey: [PRODUCTS_CACHE_KEY, debouncedQuery],
     queryFn: async () => {
-      console.log('querying')
       const url = debouncedQuery ? `${baseUrl}` : baseUrl
       const response = await fetch(url)
-      console.log(response)
-      return response.json()
+      const responseData = await response.json()
+      return responseData.products
     },
   })
 

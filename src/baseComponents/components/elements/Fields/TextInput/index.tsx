@@ -57,6 +57,7 @@ export type TextInputProps = StyledElementProps<
     inverted?: boolean
     label?: string
     disabled?: boolean
+    type?: string
     value: string
     onChange?: (value: string) => void
     onChangeRaw?: (e: string | React.ChangeEvent) => void

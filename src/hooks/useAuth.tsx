@@ -83,6 +83,9 @@ export const AuthProvider: React.FC<React.PropsWithChildren>  = ({ children }) =
 
           const response = await fetch("/api/signIn", {
             method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
             body: JSON.stringify({
               signature: _signature,
               account: account
@@ -94,6 +97,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren>  = ({ children }) =
           }
 
           setSignature(_signature)
+          return
         }
       } catch (e) {
         console.error('Sign in failed')
@@ -102,7 +106,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren>  = ({ children }) =
 
       if (signature && authState !== AUTH_STATE.SIGNED_IN) {
         setStoredSignature(signature)
-        setAuthState(AUTH_STATE.SIGNED_OUT)
+        setAuthState(AUTH_STATE.SIGNED_IN)
       }
     }
 
@@ -128,6 +132,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren>  = ({ children }) =
 
   const handleSignOut = () => {
     setSignature(undefined)
+    setStoredSignature(undefined as any)
     setAuthState(AUTH_STATE.SIGNED_OUT)
   };
 
