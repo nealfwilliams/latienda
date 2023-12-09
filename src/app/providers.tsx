@@ -31,7 +31,7 @@ export const Providers = ({ children }: any) => {
         sdkOptions={{
           checkInstallationImmediately: false,
           dappMetadata: {
-            name: "La Tienda Shop",
+            name: "Defiber",
             url: API_ROOT,
           }
         }}

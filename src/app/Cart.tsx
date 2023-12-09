@@ -15,8 +15,6 @@ export const Cart = () => {
     return null
   }
 
-  console.log('test')
-
   const _window = window as any
 
   const onCheckout = () => {
@@ -1155,6 +1153,7 @@ export const Cart = () => {
         ) : (
           <Button
             onClick={() => {
+              console.log(sdk, 'connecting')
               sdk?.connect()
             }}
           >

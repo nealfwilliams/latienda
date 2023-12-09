@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 import { useSDK } from "@metamask/sdk-react";
-import { sign } from "crypto";
 import { recoverPersonalSignature } from "@metamask/eth-sig-util";
 import { SIGN_IN_MESSAGE } from "@/constants";
 
@@ -117,7 +116,9 @@ export const AuthProvider: React.FC<React.PropsWithChildren>  = ({ children }) =
     setAuthState(AUTH_STATE.SIGNED_OUT);
   }
 
+
   const handleSignIn = async () => {
+
     try {
       if (!account) {
         setAuthState(AUTH_STATE.SIGNING_IN)
@@ -144,7 +145,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren>  = ({ children }) =
     authState,
     account: signedAccount || account,
     error
-  }), [signature, authState, error, account]);
+  }), [signature, authState, error, account, sdk]);
 
   return (
     <AuthContext.Provider value={context}>
