@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MetaMaskProvider } from '@metamask/sdk-react';
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProductListProvider } from "@/hooks/useProducts";
+import { API_ROOT } from "@/constants";
 
 export const Providers = ({ children }: any) => {
   const queryClient = new QueryClient()
@@ -31,7 +32,7 @@ export const Providers = ({ children }: any) => {
           checkInstallationImmediately: false,
           dappMetadata: {
             name: "La Tienda Shop",
-            url: window.location.host,
+            url: API_ROOT,
           }
         }}
       >
