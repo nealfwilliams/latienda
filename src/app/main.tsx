@@ -181,7 +181,7 @@ const TopBar = () => {
 const MaxWidth = ({ children }: any) => {
   return (
     <Column sx={{width: '100vw'}} align="center">
-      <Column sx={{maxWidth: '1000px', width: '100%'}}>
+      <Column sx={{maxWidth: '1000px', width: '100%', px: 4}}>
         {children}
       </Column>
     </Column>
@@ -251,7 +251,6 @@ const ProductList = () => {
     <Row
       sx={{
         flexWrap: 'wrap',
-        justifyContent: 'space-between'
       }}
     >
       {products.map((product: any) => (
@@ -272,7 +271,9 @@ const ProductListItem: React.FC<{
       raised
       image={PLACEHOLDER_IMAGE}
       sx={{
-        width: '300px'
+        width: '280px',
+        mt: 5,
+        mr: 5,
       }}
       headline={product.name}
       imageHeight='150px'

@@ -10,7 +10,8 @@ const GET = async (request: NextApiRequest, response: NextApiResponse) => {
   const products = await client.product.findMany({
     where: query ? {
       name: {
-        contains: query 
+        contains: query ,
+        mode: 'insensitive'
       }
     } : undefined,
   })

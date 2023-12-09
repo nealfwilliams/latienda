@@ -5,6 +5,7 @@ import { CartProvider } from "@/hooks/useCart"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MetaMaskProvider } from '@metamask/sdk-react';
 import { AuthProvider } from "@/hooks/useAuth";
+import { ProductListProvider } from "@/hooks/useProducts";
 
 export const Providers = ({ children }: any) => {
   const queryClient = new QueryClient()
@@ -13,7 +14,9 @@ export const Providers = ({ children }: any) => {
       <AuthProvider>
         <UiProvider>
           <QueryClientProvider client={queryClient}>
-            {children}
+            <ProductListProvider>
+              {children}
+            </ProductListProvider>
           </QueryClientProvider>
         </UiProvider>
       </AuthProvider>

@@ -2,13 +2,13 @@ import { BUTTON_SIZE, BUTTON_TYPE, Box, Button, COLOR, Column, EmptyState, FONT_
 import { BOX_SHADOW, Z_INDEX } from "@/baseComponents/theme/custom"
 import TrashIcon from '@mui/icons-material/Delete'
 import { PLACEHOLDER_IMAGE } from "@/constants"
-import { useCart } from "@/hooks/useCart"
+import { AddToCart, CartItemType, useCart } from "@/hooks/useCart"
 import { useSDK } from "@metamask/sdk-react"
-import React, { useContext } from "react"
+import React, { useContext, useEffect } from "react"
 import { ethers } from 'ethers'
 
 export const Cart = () => {
-  const { cart, isOpen } = useCart()
+  const { cart, isOpen, addToCart } = useCart()
   const { sdk, connected, connecting, provider, chainId, account } = useSDK();
 
   if (typeof window === 'undefined') {
@@ -1125,48 +1125,7 @@ export const Cart = () => {
         {cart && cart.length > 0 && (
           <>
             {cart.map((item) => (
-              <Group type={GROUP_TYPE.GROUP}>
-                <Row>
-                  <Column>
-                    <Box sx={{boxShadow: BOX_SHADOW.EMPHASIZED}}>
-                      <img
-                        src={PLACEHOLDER_IMAGE}
-                        alt={item.product.name}
-                        style={{
-                          width: '100px',
-                          height: '100px',
-                          objectFit: 'cover'
-                        }}
-                      />
-                    </Box>
-                  </Column>
-                  <Column sx={{ml: 4}}>
-                    <Row>
-                      <Label sx={{fontSize: FONT_SIZE.MD}}>{item.product.name}</Label>
-                    </Row>
-                    <Row align="center">
-                      <TextInput
-                        disabled
-                        label="Qty"
-                        size={INPUT_SIZE.SM}
-                        type="number"
-                        value={item.quantity.toString()}
-                        sx={{mt: 3, mr: 1, width: '60px'}}
-                      />
-                      x ${item.product.price} = ${item.quantity * item.product.price}.00
-                      <Button
-                        type={BUTTON_TYPE.TEXT}
-                        primaryIcon={TrashIcon}
-                        color={COLOR.ND_TERTIARY_4}
-                        size={BUTTON_SIZE.LG}
-                        sx={{
-                          ml: 2
-                        }}
-                      />
-                    </Row>
-                  </Column>
-                </Row>
-              </Group>
+              <CartItem item={item} key={item.product.id} />
             ))}
 
           </>
@@ -1203,6 +1162,74 @@ export const Cart = () => {
           </Button>
         ) }
       </Column>
+    </Group>
+  )
+}
+ 
+const CartItem: React.FC<{
+  item: CartItemType,
+}> = ({ item }) => {
+  const { addToCart, removeFromCart } = useCart()
+  const [quantity, setQuantity] = React.useState(item.quantity.toString())
+
+  useEffect(() => {
+    const quantityInt = parseInt(quantity)
+    const difference = quantityInt - item.quantity
+
+    if (difference !== 0) {
+      addToCart({
+        product: item.product,
+        quantity: difference
+      })
+    }
+  }, [quantity])
+
+  return (
+    <Group type={GROUP_TYPE.GROUP}>
+      <Row>
+        <Column>
+          <Box sx={{boxShadow: BOX_SHADOW.EMPHASIZED}}>
+            <img
+              src={PLACEHOLDER_IMAGE}
+              alt={item.product.name}
+              style={{
+                width: '100px',
+                height: '100px',
+                objectFit: 'cover'
+              }}
+            />
+          </Box>
+        </Column>
+        <Column sx={{ml: 4}}>
+          <Row>
+            <Label sx={{fontSize: FONT_SIZE.MD}}>{item.product.name}</Label>
+          </Row>
+          <Row align="center">
+            <TextInput
+              label="Qty"
+              size={INPUT_SIZE.SM}
+              type="number"
+              onChange={setQuantity}
+              value={quantity}
+              min={1}
+              sx={{mt: 3, mr: 1, width: '60px'}}
+            />
+            x ${item.product.price} = ${item.quantity * item.product.price}.00
+            <Button
+              type={BUTTON_TYPE.TEXT}
+              primaryIcon={TrashIcon}
+              color={COLOR.ND_TERTIARY_4}
+              size={BUTTON_SIZE.LG}
+              sx={{
+                ml: 2
+              }}
+              onClick={() => {
+                removeFromCart(item.product.id)
+              }}
+            />
+          </Row>
+        </Column>
+      </Row>
     </Group>
   )
 }

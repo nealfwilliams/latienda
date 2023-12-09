@@ -3,20 +3,16 @@ import { useLocalStorage } from "./useLocalStorage"
 import { Product } from "@prisma/client"
 import { Issue } from "next/dist/build/swc"
 
-export type CartType = {
+export type CartItemType = {
   product: Product,
   quantity: number
-}[]
+}
 
-export type AddToCart = (order: {
-  product: Product,
-  quantity: number
-}) => void
+export type CartType = CartItemType[]
 
-export type RemoveFromCart = (params: {
-  productId: string,
-  quantity: number
-}) => void
+export type AddToCart = (order: CartItemType) => void
+
+export type RemoveFromCart = (productId: string) => void
 
 export const CartContext = React.createContext<{
   cart: CartType,
@@ -55,19 +51,12 @@ export const CartProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     setCart(newCart)
   }
 
-  const removeFromCart = (params: {
-    productId: string,
-    quantity: number
-  }) => {
+  const removeFromCart = (productId: string) => {
     const newCart = [...cart]
-    const existingIndex = newCart.findIndex((item) => item.product.id === params.productId)
+    const existingIndex = newCart.findIndex((item) => item.product.id === productId)
 
     if (existingIndex !== -1) {
-      newCart[existingIndex].quantity -= params.quantity
-
-      if (newCart[existingIndex].quantity <= 0) {
-        newCart.splice(existingIndex, 1)
-      }
+      newCart.splice(existingIndex, 1)
     }
 
     setCart(newCart)
