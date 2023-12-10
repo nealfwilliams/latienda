@@ -4,7 +4,7 @@ import AccountIcon from '@mui/icons-material/AccountCircle'
 import HomeIcon from '@mui/icons-material/Home'
 import StoreIcon from '@mui/icons-material/Store'
 
-import { BUTTON_SIZE, BUTTON_TYPE, Button, Card, COLOR, Column, DropdownLinks, Heading, INPUT_SIZE, Modal, Paragraph, Row, Spinner, TextInput, useDialog, Icon, FONT_SIZE, TYPOGRAPHY_TYPE } from "@/baseComponents"
+import { BUTTON_SIZE, BUTTON_TYPE, Button, Card, COLOR, Column, DropdownLinks, Heading, INPUT_SIZE, Modal, Paragraph, Row, Spinner, TextInput, useDialog, Icon, FONT_SIZE, TYPOGRAPHY_TYPE, Select } from "@/baseComponents"
 import { Cart } from "./Cart"
 
 import { useCart } from "@/hooks/useCart"
@@ -13,7 +13,7 @@ import React, { useEffect } from "react"
 import { AUTH_STATE, useAuth } from "@/hooks/useAuth"
 import { useRouter } from "next/navigation"
 import { useProducts } from "@/hooks/useProducts"
-import { PLACEHOLDER_IMAGE } from '@/constants'
+import { DEFAULT_CHAIN_ID, PLACEHOLDER_IMAGE } from '@/constants'
 import { Z_INDEX } from '@/baseComponents/theme/custom'
 
 enum AUTH_FLOW {
@@ -190,9 +190,28 @@ const MaxWidth = ({ children }: any) => {
 
 export const Main = () => {
   const cart = useCart()
-  const { sdk, connected, connecting, provider, chainId } = useSDK();
+  const {
+    sdk,
+    connected,
+    connecting,
+    provider,
+    chainId: metamaskChainId,
+  } = useSDK();
+
+  const chainId = metamaskChainId || DEFAULT_CHAIN_ID
+
   const {open, close, state} = useDialog('auth-modal')
-  const { products, query: productQuery, setQuery: setProductQuery } = useProducts()
+
+  const {
+    products,
+    query: productQuery,
+    setQuery: setProductQuery,
+    setChainId,
+  } = useProducts()
+
+  useEffect(() => {
+    setChainId(chainId)
+  }, [chainId])
 
   return (
     <Column>
@@ -208,8 +227,18 @@ export const Main = () => {
               size={INPUT_SIZE.LG}
               placeholder="Search for products..."
               sx={{
-                width: '400px'
+                width: '400px',
+                mr: 2
               }}
+            />
+            <TextInput
+              disabled
+              size={INPUT_SIZE.LG}
+              label="ChainId"
+              sx={{
+                width: '100px'
+              }}
+              value={chainId || '0x1'}
             />
           </Row>
           <Row sx={{mt: 6}}>

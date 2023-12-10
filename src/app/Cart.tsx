@@ -2,7 +2,7 @@ import { BUTTON_SIZE, BUTTON_TYPE, Box, Button, COLOR, Column, EmptyState, FONT_
 import { BOX_SHADOW, Z_INDEX } from "@/baseComponents/theme/custom"
 import TrashIcon from '@mui/icons-material/Delete'
 import { PLACEHOLDER_IMAGE } from "@/constants"
-import { AddToCart, CartItemType, useCart } from "@/hooks/useCart"
+import { CartItemType, useCart } from "@/hooks/useCart"
 import { useSDK } from "@metamask/sdk-react"
 import React, { useContext, useEffect } from "react"
 import { ethers } from 'ethers'

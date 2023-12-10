@@ -1,4 +1,4 @@
-import { API_ROOT } from '@/constants'
+import { API_ROOT, DEFAULT_CHAIN_ID } from '@/constants'
 import { Product } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import React, { createContext, useEffect, useState } from 'react'
@@ -25,7 +25,8 @@ type ProductListContextType = {
   isLoading: boolean
   error: any
   query: string
-  setQuery: (query: string) => void
+  setQuery: (query: string) => void,
+  setChainId: (chainId: string) => void,
 }
 
 const ProductListContext = createContext<ProductListContextType>({
@@ -33,23 +34,30 @@ const ProductListContext = createContext<ProductListContextType>({
   isLoading: false,
   error: null,
   query: '',
-  setQuery: () => {}
+  setQuery: () => {},
+  setChainId: () => {},
 })
 
 export const ProductListProvider: React.FC<React.PropsWithChildren> = ({
   children
 }) => {
   const [query, setQuery] = useState('')
+  const [chainId, setChainId] = useState<string | undefined>(undefined)
   const debouncedQuery = useDebounce(query, 500)
+
 
   // Debounce updates to the query
   const { data, isLoading, error} = useQuery({
-    queryKey: [PRODUCTS_CACHE_KEY, debouncedQuery],
+    queryKey: [PRODUCTS_CACHE_KEY, debouncedQuery, chainId],
     queryFn: async () => {
-      const url = debouncedQuery ? `${baseUrl}?query=${query}` : baseUrl
+      const queryParams = new URLSearchParams()
+      queryParams.set('chainId', chainId || DEFAULT_CHAIN_ID)
+
+      if (debouncedQuery) queryParams.set('query', query)
+
+      const url = `${baseUrl}?${queryParams.toString()}`
       const response = await fetch(url)
       const responseData = await response.json()
-      console.log('responseData', responseData)
       return responseData.products
     },
   })
@@ -58,6 +66,7 @@ export const ProductListProvider: React.FC<React.PropsWithChildren> = ({
     <ProductListContext.Provider
       value={{
         products: data,
+        setChainId,
         isLoading,
         error,
         query,

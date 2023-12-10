@@ -1,4 +1,4 @@
-import { SIGN_IN_MESSAGE } from '@/constants'
+import { DEFAULT_CHAIN_ID, SIGN_IN_MESSAGE } from '@/constants'
 import { client } from '@/utils/client'
 import { verifyUser } from '@/utils/verifyUser'
 import { recoverPersonalSignature } from '@metamask/eth-sig-util'
@@ -6,14 +6,18 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 const GET = async (request: NextApiRequest, response: NextApiResponse) => {
   const query = (request.query['query'] || '') as string
+  const chainId = (request.query['chainId'] || DEFAULT_CHAIN_ID) as string
 
   const products = await client.product.findMany({
-    where: query ? {
+    where: {
       name: {
-        contains: query ,
+        contains: query,
         mode: 'insensitive'
+      },
+      chainId: {
+        equals: chainId
       }
-    } : undefined,
+    },
   })
 
   response.status(200).json({ products })
@@ -46,6 +50,7 @@ const POST = async (request: NextApiRequest, response: NextApiResponse) => {
         name: fields.name,
         price: fields.price,
         description: fields.description,
+        chainId: fields.chainId,
         quantity: 0
       }
     })

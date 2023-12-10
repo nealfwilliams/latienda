@@ -31,6 +31,7 @@ model Product {
   quantity            Int
   shippingValidation  Boolean  @default(false)
   shippingTimeoutDays Int?
+  chainId             String
 }
 
 enum OrderStatus {
