@@ -2,6 +2,7 @@ import React, { useMemo } from "react"
 import { useLocalStorage } from "./useLocalStorage"
 import { Product } from "@prisma/client"
 import { Issue } from "next/dist/build/swc"
+import { useSnackBar } from "@/baseComponents"
 
 export type CartItemType = {
   product: Product,
@@ -34,6 +35,7 @@ export const CartProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     setValue: setCart
   } = useLocalStorage<CartType>('cart', [])
   const [isOpen, setIsOpen] = React.useState(false)
+  const {addMessage} = useSnackBar()
 
   const addToCart = (order: {
     product: Product,
@@ -49,6 +51,10 @@ export const CartProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     }
 
     setCart(newCart)
+
+    addMessage({
+      message: 'Item added to cart.'
+    })
   }
 
   const removeFromCart = (productId: string) => {

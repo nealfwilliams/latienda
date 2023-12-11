@@ -11,17 +11,17 @@ import { API_ROOT } from "@/constants";
 export const Providers = ({ children }: any) => {
   const queryClient = new QueryClient()
   const main = (
-    <CartProvider>
-      <AuthProvider>
-        <UiProvider>
+    <UiProvider>
+      <CartProvider>
+        <AuthProvider>
           <QueryClientProvider client={queryClient}>
             <ProductListProvider>
               {children}
             </ProductListProvider>
           </QueryClientProvider>
-        </UiProvider>
-      </AuthProvider>
-    </CartProvider>
+        </AuthProvider>
+      </CartProvider>
+    </UiProvider>
   )
 
   if (typeof window !== 'undefined') {

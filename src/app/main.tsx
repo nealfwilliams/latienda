@@ -1,6 +1,6 @@
 'use client'
 
-import { BUTTON_SIZE, BUTTON_TYPE, Button, Card, COLOR, Column, DropdownLinks, Heading, INPUT_SIZE, Modal, Paragraph, Row, Spinner, TextInput, useDialog, Icon, FONT_SIZE, TYPOGRAPHY_TYPE, Select } from "@/baseComponents"
+import { BUTTON_SIZE, BUTTON_TYPE, Button, Card, COLOR, Column, DropdownLinks, Heading, INPUT_SIZE, Modal, Paragraph, Row, Spinner, TextInput, useDialog, Icon, FONT_SIZE, TYPOGRAPHY_TYPE, Select, SnackBar, useSnackBar } from "@/baseComponents"
 import { Cart } from "./Cart"
 
 import { useCart } from "@/hooks/useCart"
@@ -103,6 +103,7 @@ export const Main = () => {
         </Column>
       </MaxWidth>
       <Cart />
+      <SnackBar />
     </Column>
   )
 }
