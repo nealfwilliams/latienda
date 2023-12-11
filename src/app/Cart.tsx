@@ -57,8 +57,6 @@ export const Cart = () => {
     const order = responseData.order
     console.log(order)
 
-    return
-
     // GAVIN'S CODE GOES HERE
     async function main() {
       // Get the provider and signer fyrom the browser window

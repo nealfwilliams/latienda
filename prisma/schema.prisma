@@ -25,7 +25,7 @@ model Product {
   name                String
   description         String
   price               Int
-  images              String[]
+  image               String?
   vendorId            String   @db.ObjectId()
   vendor              User     @relation(fields: [vendorId], references: [id])
   quantity            Int

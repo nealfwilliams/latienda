@@ -184,9 +184,9 @@ export const Card: React.FC<CardProps> = ({
       {displayDate && <DateDisplay date={displayDate} />}
 
       <Row sx={{ px: contentPaddingX, py: contentPaddingY }}>
-        <Column justify="center">
+        <Column align="flex-start">
           {headline && (
-            <Heading typography={typography} sx={{ textAlign: 'justify' }}>
+            <Heading typography={typography} sx={{width: "100%", textAlign: 'left'}}>
               {truncateHeadlineAfter ? (
                 <ReadMore
                   lines={truncateHeadlineAfter}

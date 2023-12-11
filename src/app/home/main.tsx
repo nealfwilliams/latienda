@@ -39,6 +39,7 @@ export const Main = () => {
   const [productName, setProductName] = useState('')
   const [productDescription, setProductDescription] = useState('')
   const [productPrice, setProductPrice] = useState(0)
+  const [imageUrl, setImageUrl] = useState('')
 
   const [orderIdForShippingModal, setOrderIdForShippingModal] = useState<string | undefined>()
   const [shippingLabel, setShippingLabel] = useState<string>('')
@@ -54,6 +55,7 @@ export const Main = () => {
         name: productName,
         description: productDescription,
         price: productPrice,
+        image: imageUrl,
         chainId
       }
       const res = await fetch('/api/products', {
@@ -140,6 +142,12 @@ export const Main = () => {
               sx={{mt: 4}}
               value={productDescription}
               onChange={setProductDescription}
+            />
+            <TextInput
+              label="Image URL"
+              value={imageUrl}
+              sx={{mt: 4}}
+              onChange={setImageUrl}
             />
             <TextInput
               label="Product Price"

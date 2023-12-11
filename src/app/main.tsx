@@ -154,7 +154,7 @@ const ProductListItem: React.FC<{
   return (
     <Card
       raised
-      image={PLACEHOLDER_IMAGE}
+      image={product?.image || PLACEHOLDER_IMAGE}
       sx={{
         width: '280px',
         mt: 5,

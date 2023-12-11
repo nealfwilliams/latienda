@@ -21,20 +21,7 @@ const GET = async (request: NextApiRequest, response: NextApiResponse) => {
     }
   })
 
-  // await client.order.deleteMany({
-  //   where: {
-  //     id: '6572b9ec3374dfdddaa6f50a' 
-  //   }
-  // }) 
-
-  // const orders = await client.order.findMany()
-
   response.status(200).json({ orders })
-}
-
-type SummaryItem = {
-  productId: string;
-  quantity: number;
 }
 
 const POST = async (request: NextApiRequest, response: NextApiResponse) => {
@@ -110,5 +97,4 @@ export default async function handler(
   } else if (req.method === 'GET') {
     await GET(req, res)
   }
-
 }
