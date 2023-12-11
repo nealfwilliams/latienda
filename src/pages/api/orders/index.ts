@@ -4,7 +4,30 @@ import { OrderStatus } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 const GET = async (request: NextApiRequest, response: NextApiResponse) => {
-  const orders = await client.order.findMany()
+  const user = await verifyUser(request)
+
+  if (!user) {
+    response.status(401).json({
+      status: 401,
+      statusText: 'Unauthorized',
+    })
+
+    return
+  }
+
+  const orders = await client.order.findMany({
+    where: {
+      vendorId: user.id
+    }
+  })
+
+  // await client.order.deleteMany({
+  //   where: {
+  //     id: '6572b9ec3374dfdddaa6f50a' 
+  //   }
+  // }) 
+
+  // const orders = await client.order.findMany()
 
   response.status(200).json({ orders })
 }
@@ -39,7 +62,7 @@ const POST = async (request: NextApiRequest, response: NextApiResponse) => {
     let total = 0
     let vendorId: string = ''
 
-    summary.items.forEach(async (item: SummaryItem) => {
+    for (const item of summary) {
       const product = await client.product.findUnique({
         where: {
           id: item.productId
@@ -56,7 +79,8 @@ const POST = async (request: NextApiRequest, response: NextApiResponse) => {
 
       vendorId = product.vendorId
       total += product.price * item.quantity
-    })
+    }
+
 
     const order = await client.order.create({
       data: {
@@ -64,6 +88,11 @@ const POST = async (request: NextApiRequest, response: NextApiResponse) => {
         buyerId: user.id,
         total: total,
         summary: fields.summary,
+        address1: fields.address1,
+        address2: fields.address2,
+        city: fields.city,
+        state: fields.state,
+        zip: fields.zip,
         status: OrderStatus.IN_PROGRESS,
       }
     })

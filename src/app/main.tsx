@@ -1,8 +1,4 @@
 'use client'
-import CartIcon from '@mui/icons-material/ShoppingCart'
-import AccountIcon from '@mui/icons-material/AccountCircle'
-import HomeIcon from '@mui/icons-material/Home'
-import StoreIcon from '@mui/icons-material/Store'
 
 import { BUTTON_SIZE, BUTTON_TYPE, Button, Card, COLOR, Column, DropdownLinks, Heading, INPUT_SIZE, Modal, Paragraph, Row, Spinner, TextInput, useDialog, Icon, FONT_SIZE, TYPOGRAPHY_TYPE, Select } from "@/baseComponents"
 import { Cart } from "./Cart"
@@ -11,15 +7,10 @@ import { useCart } from "@/hooks/useCart"
 import { useSDK } from '@metamask/sdk-react';
 import React, { useEffect } from "react"
 import { AUTH_STATE, useAuth } from "@/hooks/useAuth"
-import { useRouter } from "next/navigation"
 import { useProducts } from "@/hooks/useProducts"
 import { DEFAULT_CHAIN_ID, PLACEHOLDER_IMAGE } from '@/constants'
-import { Z_INDEX } from '@/baseComponents/theme/custom'
-
-enum AUTH_FLOW {
-  LOG_IN='LOG_IN',
-  SIGN_UP='SIGN_UP'
-}
+import { TopBar } from "./TopBar";
+import { MaxWidth } from "./MaxWidth";
 
 const AuthModal: React.FC<{
   isOpen: boolean,
@@ -58,149 +49,14 @@ const AuthModal: React.FC<{
   )
 }
 
-const TopControls = () => {
-  const {isOpen, setIsOpen} = useCart()
-  const {authState, handleSignOut} = useAuth()
-  const router = useRouter()
-
-  const { open } = useDialog('auth-modal')
-
-  return (
-    <Row>
-      {authState === AUTH_STATE.SIGNED_OUT && (
-        <Button
-          color={COLOR.PRIMARY}
-          textColor={COLOR.WHITE}
-          primaryIcon={AccountIcon}
-          size={BUTTON_SIZE.LG}
-          sx={{
-            mr: 2,
-          }}
-          onClick={() => {
-            open()
-          }}
-        />
-      )}
-
-      {authState === AUTH_STATE.SIGNED_IN && (
-        <>
-          <Button
-            color={COLOR.PRIMARY}
-            textColor={COLOR.WHITE}
-            primaryIcon={StoreIcon}
-            size={BUTTON_SIZE.LG}
-            sx={{
-              mr: 2,
-            }}
-            onClick={() => {
-              router.push('/')
-            }}
-          />
-          <Button
-            color={COLOR.PRIMARY}
-            textColor={COLOR.WHITE}
-            primaryIcon={HomeIcon}
-            size={BUTTON_SIZE.LG}
-            sx={{
-              mr: 2,
-            }}
-            onClick={() => {
-              router.push('/home')
-            }}
-          />
-          <DropdownLinks
-            options={[{
-              label: 'Sign Out',
-              onClick: () => {
-                handleSignOut()
-              },
-              value: 'sign-out'
-            }]}
-          >
-            {( { anchorProps }) => (
-              <Button  
-                {...anchorProps}
-                color={COLOR.PRIMARY}
-                textColor={COLOR.WHITE}
-                primaryIcon={AccountIcon}
-                size={BUTTON_SIZE.LG}
-                sx={{
-                  mr: 2,
-                }}
-              />
-            )}
-          </DropdownLinks>
-        </>
-      )}
-
-      <Button
-        color={COLOR.PRIMARY}
-        textColor={COLOR.WHITE}
-        primaryIcon={CartIcon}
-        size={BUTTON_SIZE.LG}
-        onClick={() => {
-          setIsOpen(!isOpen)
-        }}
-        sx={{
-          mr: 4,
-        }}
-      />
-    </Row>
-  )
-}
-
-const TopBar = () => {
-  return (
-    <Row
-      justify='center'
-      sx={{
-        width: '100%',
-        height: '64px',
-        bg: COLOR.PRIMARY,
-        zIndex: Z_INDEX.ELEVATED + 1
-      }}
-    >
-      <Row sx={{maxWidth: '1000px', width: '100%'}} justify="space-between" align="center">
-        <Row>
-          <img
-            src="https://storage.googleapis.com/defiber-static/defiber%20Main%20Logo.png"
-            style={{
-              height: '40px',
-              width: 'auto'
-            }}
-          />
-        </Row>
-        <Row>
-          <TopControls />
-        </Row>
-      </Row>
-    </Row>
-  )
-}
-
-const MaxWidth = ({ children }: any) => {
-  return (
-    <Column sx={{width: '100vw'}} align="center">
-      <Column sx={{maxWidth: '1000px', width: '100%', px: 4}}>
-        {children}
-      </Column>
-    </Column>
-  )
-}
-
 export const Main = () => {
-  const cart = useCart()
   const {
-    sdk,
-    connected,
-    connecting,
-    provider,
     chainId: metamaskChainId,
   } = useSDK();
 
   const chainId = metamaskChainId || DEFAULT_CHAIN_ID
 
-  const {open, close, state} = useDialog('auth-modal')
+  const {close, state} = useDialog('auth-modal')
 
   const {
     products,

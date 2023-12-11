@@ -20,6 +20,8 @@ async function POST(
       status: 404,
       statusText: 'Not Found',
     })
+
+    return
   }
 
   // const apiKeyFound = await verifyRequestKey(request)
@@ -38,6 +40,11 @@ async function POST(
     data: {
       fulfilled: true,
     }
+  })
+
+  response.status(200).json({
+    status: 200,
+    statusText: 'OK',
   })
 }
 

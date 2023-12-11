@@ -51,10 +51,17 @@ model Order {
   status         OrderStatus
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
-  hasBeenPaid      Boolean     @default(false)
-  hasBeenShipped   Boolean     @default(false)
-  hasBeenDelivered Boolean     @default(false)
-  fulfilled        Boolean     @default(false)
+  hasBeenPaid       Boolean     @default(false)
+  hasBeenShipped    Boolean     @default(false)
+  hasBeenDelivered  Boolean     @default(false)
+  fulfilled         Boolean     @default(false)
+  shippingLabel     String?
+  address1       String?
+  address2       String?
+  city           String?
+  state          String?
+  zip            String?
+
 }
 
 model AuthKey {

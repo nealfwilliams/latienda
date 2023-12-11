@@ -1,15 +1,31 @@
-import { BUTTON_SIZE, BUTTON_TYPE, Box, Button, COLOR, Column, EmptyState, FONT_SIZE, GROUP_TYPE, Group, HEADING_SIZE, Heading, INPUT_SIZE, LABEL_SIZE, Label, Paragraph, Row, TYPOGRAPHY_TYPE, TextInput } from "@/baseComponents"
+import { BUTTON_SIZE, BUTTON_TYPE, Box, Button, COLOR, Column, EmptyState, FONT_SIZE, GROUP_TYPE, Group, HEADING_SIZE, Heading, INPUT_SIZE, LABEL_SIZE, Label, Paragraph, Row, Select, TYPOGRAPHY_TYPE, TextInput } from "@/baseComponents"
 import { BOX_SHADOW, Z_INDEX } from "@/baseComponents/theme/custom"
 import TrashIcon from '@mui/icons-material/Delete'
-import { PLACEHOLDER_IMAGE } from "@/constants"
+import { API_ROOT, PLACEHOLDER_IMAGE } from "@/constants"
 import { CartItemType, useCart } from "@/hooks/useCart"
 import { useSDK } from "@metamask/sdk-react"
 import React, { useContext, useEffect } from "react"
 import { ethers } from 'ethers'
+import { US_STATE, US_STATE_OPTIONS, useAddress } from "@/hooks/useAddress"
+import { useAuth } from "@/hooks/useAuth"
 
 export const Cart = () => {
   const { cart, isOpen, addToCart } = useCart()
-  const { sdk, connected, connecting, provider, chainId, account } = useSDK();
+  const { sdk, connected, connecting, provider, chainId } = useSDK();
+  const { signature, handleSignIn, account } = useAuth()
+  const {
+    address1,
+    address2,
+    city,
+    state,
+    zip,
+    setAddress1,
+    setAddress2,
+    setCity,
+    setState,
+    setZip,
+    isValid: isAddressValid
+  } = useAddress()
 
   if (typeof window === 'undefined') {
     return null
@@ -17,7 +33,32 @@ export const Cart = () => {
 
   const _window = window as any
 
-  const onCheckout = () => {
+  const onCheckout = async () => {
+    const response = await fetch(`${API_ROOT}/api/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Account': account!,
+        'X-Signature': signature!
+      },
+      body: JSON.stringify({
+        summary: cart.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity
+        })),
+        address1,
+        address2,
+        city,
+        state,
+        zip
+      })
+    })
+    const responseData = await response.json()
+    const order = responseData.order
+    console.log(order)
+
+    return
+
     // GAVIN'S CODE GOES HERE
     async function main() {
       // Get the provider and signer fyrom the browser window
@@ -1128,10 +1169,45 @@ export const Cart = () => {
 
           </>
         )}
-
       </Column>
 
       <Column grow={0} justify={'flex-end'} align="center" sx={{p: 5}}>
+        <TextInput
+          label="Address 1"
+          value={address1}
+          onChange={setAddress1}
+          sx={{ width: '250px' }}
+        />
+        <TextInput
+          label="Address 2"
+          value={address2}
+          onChange={setAddress2}
+          sx={{ width: '250px', mt: 4 }}
+        />
+        <Row sx={{ mt: 4 }}>
+          <TextInput
+            label="City"
+            value={city}
+            onChange={setCity}
+            sx={{ width: '162px', mr: 2 }}
+          />
+          <Select
+            label="State"
+            value={state}
+            options={US_STATE_OPTIONS}
+            onSelectOption={setState}
+            sx={{
+              width: "80px"
+            }}
+          />
+        </Row>
+        <TextInput
+          label="Zip"
+          value={zip}
+          onChange={setZip}
+          sx={{ width: '250px', mt: 4 }}
+        />
+
         <Group type={GROUP_TYPE.GROUP}>
           <Row>
             <Label sx={{mr: 2}} size={LABEL_SIZE.LG}>
