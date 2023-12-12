@@ -12,6 +12,8 @@ import { DEFAULT_CHAIN_ID, PLACEHOLDER_IMAGE } from '@/constants'
 import { TopBar } from "./TopBar";
 import { MaxWidth } from "./MaxWidth";
 
+
+
 const AuthModal: React.FC<{
   isOpen: boolean,
   close: () => void

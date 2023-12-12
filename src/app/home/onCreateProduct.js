@@ -5,6 +5,6 @@ export const onCreateProduct = ({
   const { sdk, account, chainId } = metamask
 
   console.log(product, sdk, account, chainId)
-
+metamask.
   // Gavin code goes here
 }
