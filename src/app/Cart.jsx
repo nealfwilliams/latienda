@@ -31,15 +31,15 @@ export const Cart = () => {
     return null
   }
 
-  const _window = window as any
+  const _window = window
 
   const onCheckout = async () => {
     const response = await fetch(`${API_ROOT}/api/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Account': account!,
-        'X-Signature': signature!
+        'X-Account': account,
+        'X-Signature': signature
       },
       body: JSON.stringify({
         summary: cart.map((item) => ({
@@ -66,7 +66,7 @@ export const Cart = () => {
       const _accounts = await _window.ethereum.request({
         method: "eth_requestAccounts",
       })
-      const accounts: any = _accounts || [] 
+      const accounts = _accounts || [] 
 
       // console.log("accounts", accounts[0]);
       const signer = await provider.getSigner(0);
@@ -680,9 +680,7 @@ export const Cart = () => {
   )
 }
  
-const CartItem: React.FC<{
-  item: CartItemType,
-}> = ({ item }) => {
+const CartItem = ({ item }) => {
   const { addToCart, removeFromCart } = useCart()
   const [quantity, setQuantity] = React.useState(item.quantity.toString())
 
