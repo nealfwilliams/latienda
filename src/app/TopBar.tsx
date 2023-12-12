@@ -115,9 +115,13 @@ export const TopBar = () => {
         <Row>
           <img
             src="https://storage.googleapis.com/defiber-static/defiber%20Main%20Logo.png"
+            onClick={() => {
+              window.location.href = '/'
+            }}
             style={{
               height: '40px',
-              width: 'auto'
+              width: 'auto',
+              cursor: 'pointer'
             }}
           />
         </Row>

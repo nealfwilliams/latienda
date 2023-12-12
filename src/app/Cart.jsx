@@ -9,8 +9,28 @@ import { ethers } from 'ethers'
 import { US_STATE, US_STATE_OPTIONS, useAddress } from "@/hooks/useAddress"
 import { useAuth } from "@/hooks/useAuth"
 
+const Overlay = ({ onClick, children }) => {
+  console.log('children', children)
+  return (
+    <Column
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        bg: 'rgba(0, 0, 0, 0.05)',
+        zIndex: Z_INDEX.ELEVATED
+      }}
+      onClick={onClick}
+    >
+      {children}
+    </Column>
+  )
+}
+
 export const Cart = () => {
-  const { cart, isOpen, addToCart } = useCart()
+  const { cart, isOpen, addToCart, setIsOpen } = useCart()
   const { sdk, connected, connecting, provider, chainId } = useSDK();
   const { signature, handleSignIn, account } = useAuth()
   const {
@@ -30,6 +50,18 @@ export const Cart = () => {
   if (typeof window === 'undefined') {
     return null
   }
+
+  useEffect(() => {
+    // add window listener so we can close the cart when the user clicks outside of it
+    const listener = (event) => {
+      if (event.target.id !== 'cart') {
+        addToCart(null)
+      }
+    }
+
+    listener && window.addEventListener('click', listener)
+
+  })
 
   const _window = window
 
@@ -580,103 +612,107 @@ export const Cart = () => {
   const total = cart ? cart.reduce((acc, item) => acc + (item.quantity * item.product.price), 0) : 0
 
   return (
-    <Group sx={{
-      display: 'flex',
-      my: 0,
-      flexDirection: 'column',
-      position: 'fixed',
-      top: '64px',
-      right: 0,
-      width: '400px',
-      height: 'calc(100vh - 64px)',
-      bg: COLOR.WHITE,
-      boxShadow: BOX_SHADOW.NORMAL,
-      zIndex: Z_INDEX.ELEVATED,
-      p: 4
-    }}>
-      <Heading size={HEADING_SIZE.SM}>Your Cart</Heading>
-      <Column grow={1} sx={{mt: 4}}>
-        {cart && cart.length === 0 && (
-          <EmptyState omitIcon>Your cart is empty.</EmptyState>
-        )}
+    <Overlay onClick={() => {setIsOpen(false)}}>
+      <Group
+        sx={{
+          display: 'flex',
+          my: 0,
+          flexDirection: 'column',
+          position: 'fixed',
+          top: '64px',
+          right: 0,
+          width: '400px',
+          height: 'calc(100vh - 64px)',
+          bg: COLOR.WHITE,
+          boxShadow: BOX_SHADOW.NORMAL,
+          zIndex: Z_INDEX.ELEVATED,
+          p: 4
+        }}
+      >
+        <Heading size={HEADING_SIZE.SM}>Your Cart</Heading>
+        <Column grow={1} sx={{mt: 4}}>
+          {cart && cart.length === 0 && (
+            <EmptyState omitIcon>Your cart is empty.</EmptyState>
+          )}
 
-        {cart && cart.length > 0 && (
-          <>
-            {cart.map((item) => (
-              <CartItem item={item} key={item.product.id} />
-            ))}
+          {cart && cart.length > 0 && (
+            <>
+              {cart.map((item) => (
+                <CartItem item={item} key={item.product.id} />
+              ))}
 
-          </>
-        )}
-      </Column>
+            </>
+          )}
+        </Column>
 
-      <Column grow={0} justify={'flex-end'} align="center" sx={{p: 5}}>
-        <TextInput
-          label="Address 1"
-          value={address1}
-          onChange={setAddress1}
-          sx={{ width: '250px' }}
-        />
-        <TextInput
-          label="Address 2"
-          value={address2}
-          onChange={setAddress2}
-          sx={{ width: '250px', mt: 4 }}
-        />
-        <Row sx={{ mt: 4 }}>
+        <Column grow={0} justify={'flex-end'} align="center" sx={{p: 5}}>
           <TextInput
-            label="City"
-            value={city}
-            onChange={setCity}
-            sx={{ width: '162px', mr: 2 }}
+            label="Address 1"
+            value={address1}
+            onChange={setAddress1}
+            sx={{ width: '250px' }}
           />
-          <Select
-            label="State"
-            value={state}
-            options={US_STATE_OPTIONS}
-            onSelectOption={setState}
-            sx={{
-              width: "80px"
-            }}
+          <TextInput
+            label="Address 2"
+            value={address2}
+            onChange={setAddress2}
+            sx={{ width: '250px', mt: 4 }}
           />
-        </Row>
-        <TextInput
-          label="Zip"
-          value={zip}
-          onChange={setZip}
-          sx={{ width: '250px', mt: 4 }}
-        />
-
-        <Group type={GROUP_TYPE.GROUP}>
-          <Row>
-            <Label sx={{mr: 2}} size={LABEL_SIZE.LG}>
-              Total: 
-            </Label>
-            <Paragraph typography={TYPOGRAPHY_TYPE.CONDENSED_TEXT_LARGE}>
-              ${total}.00
-            </Paragraph>
+          <Row sx={{ mt: 4 }}>
+            <TextInput
+              label="City"
+              value={city}
+              onChange={setCity}
+              sx={{ width: '162px', mr: 2 }}
+            />
+            <Select
+              label="State"
+              value={state}
+              options={US_STATE_OPTIONS}
+              onSelectOption={setState}
+              sx={{
+                width: "80px"
+              }}
+            />
           </Row>
-        </Group>
-        { connected ? (
-          <Button
-            onClick={() => {
-              onCheckout()
-            }} 
-          >
-            Check Out
-          </Button>
-        ) : (
-          <Button
-            onClick={() => {
-              console.log(sdk, 'connecting')
-              sdk?.connect()
-            }}
-          >
-            Connect Wallet
-          </Button>
-        ) }
-      </Column>
-    </Group>
+          <TextInput
+            label="Zip"
+            value={zip}
+            onChange={setZip}
+            sx={{ width: '250px', mt: 4 }}
+          />
+
+          <Group type={GROUP_TYPE.GROUP}>
+            <Row>
+              <Label sx={{mr: 2}} size={LABEL_SIZE.LG}>
+                Total: 
+              </Label>
+              <Paragraph typography={TYPOGRAPHY_TYPE.CONDENSED_TEXT_LARGE}>
+                ${total}.00
+              </Paragraph>
+            </Row>
+          </Group>
+          { connected ? (
+            <Button
+              onClick={() => {
+                onCheckout()
+              }} 
+            >
+              Check Out
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                console.log(sdk, 'connecting')
+                sdk?.connect()
+              }}
+            >
+              Connect Wallet
+            </Button>
+          ) }
+        </Column>
+      </Group>
+    </Overlay>
   )
 }
  
@@ -743,5 +779,6 @@ const CartItem = ({ item }) => {
         </Column>
       </Row>
     </Group>
+
   )
 }
