@@ -51,18 +51,6 @@ export const Cart = () => {
     return null
   }
 
-  useEffect(() => {
-    // add window listener so we can close the cart when the user clicks outside of it
-    const listener = (event) => {
-      if (event.target.id !== 'cart') {
-        addToCart(null)
-      }
-    }
-
-    listener && window.addEventListener('click', listener)
-
-  })
-
   const _window = window
 
   const onCheckout = async () => {
