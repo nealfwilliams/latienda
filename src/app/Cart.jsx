@@ -616,6 +616,10 @@ export const Cart = () => {
           zIndex: Z_INDEX.ELEVATED,
           p: 4
         }}
+
+        onClick={e => {
+          e.stopPropagation()
+        }}
       >
         <Heading size={HEADING_SIZE.SM}>Your Cart</Heading>
         <Column grow={1} sx={{mt: 4}}>
