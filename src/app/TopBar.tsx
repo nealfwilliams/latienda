@@ -8,6 +8,7 @@ import AccountIcon from '@mui/icons-material/AccountCircle'
 import HomeIcon from '@mui/icons-material/Home'
 import StoreIcon from '@mui/icons-material/Store'
 import { Z_INDEX } from "@/baseComponents/theme/custom"
+import { useEffect, useState } from "react"
 
 const TopControls = () => {
   const {isOpen, setIsOpen} = useCart()
@@ -15,6 +16,15 @@ const TopControls = () => {
   const router = useRouter()
 
   const { open } = useDialog('auth-modal')
+  const [isFirstRender, setIsFirstRender] = useState(true)
+
+  useEffect(() => {
+    setIsFirstRender(false)
+  })
+
+  if (isFirstRender && process.env.NODE_ENV === 'development') {
+    return null
+  }
 
   return (
     <Row>

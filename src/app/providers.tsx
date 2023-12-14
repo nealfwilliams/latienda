@@ -11,36 +11,38 @@ import { API_ROOT } from "@/constants";
 export const Providers = ({ children }: any) => {
   const queryClient = new QueryClient()
   const main = (
-    <UiProvider>
-      <CartProvider>
-        <AuthProvider>
-          <QueryClientProvider client={queryClient}>
-            <ProductListProvider>
-              {children}
-            </ProductListProvider>
-          </QueryClientProvider>
-        </AuthProvider>
-      </CartProvider>
-    </UiProvider>
+    <MetaMaskProvider
+      debug
+      sdkOptions={{
+        checkInstallationImmediately: false,
+        dappMetadata: {
+          name: "Defiber",
+          url: API_ROOT,
+        }
+      }}
+    >
+      <UiProvider>
+        <CartProvider>
+          <AuthProvider>
+            <QueryClientProvider client={queryClient}>
+              <ProductListProvider>
+                {children}
+              </ProductListProvider>
+            </QueryClientProvider>
+          </AuthProvider>
+        </CartProvider>
+      </UiProvider>
+    </MetaMaskProvider>
   )
 
-  if (typeof window !== 'undefined') {
-    return (
-      <MetaMaskProvider
-        debug
-        sdkOptions={{
-          checkInstallationImmediately: false,
-          dappMetadata: {
-            name: "Defiber",
-            url: API_ROOT,
-          }
-        }}
-      >
-        {main}
-      </MetaMaskProvider>
-    ) 
-  } else {
-    return main
-  }
-
+  return main
+  // if (typeof window !== 'undefined') {
+  //   return (
+      
+  //       {main}
+  //     </MetaMaskProvider>
+  //   ) 
+  // } else {
+  //   return main
+  // }
 }
