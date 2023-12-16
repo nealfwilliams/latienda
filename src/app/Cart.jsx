@@ -5,9 +5,39 @@ import { API_ROOT, PLACEHOLDER_IMAGE } from "@/constants"
 import { CartItemType, useCart } from "@/hooks/useCart"
 import { useSDK } from "@metamask/sdk-react"
 import React, { useContext, useEffect } from "react"
-import { ethers } from 'ethers'
+//import { ethers } from 'ethers'
+const ethers = require('ethers');
 import { US_STATE, US_STATE_OPTIONS, useAddress } from "@/hooks/useAddress"
 import { useAuth } from "@/hooks/useAuth"
+//------------------------------
+//const fs = require("fs");
+const path = require("path");
+// const {
+//   SubscriptionManager,
+//   simulateScript,
+//   ResponseListener,
+//   ReturnType,
+//   decodeResult,
+//   FulfillmentCode,
+// } = require("@chainlink/functions-toolkit");
+const functionsConsumerAbi = require("../smartContracts/abi/abi/payment2.json");
+//const ethers = require("ethers");
+
+const consumerAddress = "0xDE74190f3293DdD7edAbA64ed38a680bCaF75555"; // REPLACE this with your Functions consumer address
+const subscriptionId = 50; // REPLACE this with your subscription ID
+const routerAddress = "0xdc2AAF042Aeff2E68B3e8E33F19e4B9fA7C73F10";
+const linkTokenAddress = "0xb0897686c545045aFc77CF20eC7A532E3120E0F1";
+const donId = "fun-polygon-mainnet-1";
+const explorerUrl = "https://polygonscan.com";
+//const source = require("./source.js");
+const source = String("test");
+//String();//fs
+// .readFileSync(path.resolve(__dirname, "source.js"))
+// .toString();
+//console.log("source.js ==",source)
+const args = ["JP"];
+const gasLimit = 300000;
+//------------------------------
 
 const Overlay = ({ onClick, children }) => {
   console.log('children', children)
@@ -51,6 +81,8 @@ export const Cart = () => {
     return null
   }
 
+  const total = cart ? cart.reduce((acc, item) => acc + (item.quantity * item.product.price), 0) : 0
+
   const _window = window
 
   const onCheckout = async () => {
@@ -88,24 +120,29 @@ export const Cart = () => {
       })
       const accounts = _accounts || [] 
 
-      // console.log("accounts", accounts[0]);
+      console.log("accounts", accounts[0]);
       const signer = await provider.getSigner(0);
-      console.log("accounts[0]", accounts[0]);
+      console.log("_accounts[0]", _accounts[0]);
+      console.log(typeof(accounts[0]))
       console.log("provider= ", provider);
       console.log("signer= ", signer);
-      const amount = ethers.parseEther(total);
+      //console.log("total= ", total);
+      const amount = ethers.parseUnits(String(total), "mwei");
       const obj = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"userAddress","type":"address"},{"indexed":false,"internalType":"address payable","name":"relayerAddress","type":"address"},{"indexed":false,"internalType":"bytes","name":"functionSignature","type":"bytes"}],"name":"MetaTransactionExecuted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"role","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"previousAdminRole","type":"bytes32"},{"indexed":true,"internalType":"bytes32","name":"newAdminRole","type":"bytes32"}],"name":"RoleAdminChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"role","type":"bytes32"},{"indexed":true,"internalType":"address","name":"account","type":"address"},{"indexed":true,"internalType":"address","name":"sender","type":"address"}],"name":"RoleGranted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"role","type":"bytes32"},{"indexed":true,"internalType":"address","name":"account","type":"address"},{"indexed":true,"internalType":"address","name":"sender","type":"address"}],"name":"RoleRevoked","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"CHILD_CHAIN_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"CHILD_CHAIN_ID_BYTES","outputs":[{"internalType":"bytes","name":"","type":"bytes"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DEFAULT_ADMIN_ROLE","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DEPOSITOR_ROLE","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ERC712_VERSION","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ROOT_CHAIN_ID","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"ROOT_CHAIN_ID_BYTES","outputs":[{"internalType":"bytes","name":"","type":"bytes"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"name_","type":"string"}],"name":"changeName","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"bytes","name":"depositData","type":"bytes"}],"name":"deposit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"userAddress","type":"address"},{"internalType":"bytes","name":"functionSignature","type":"bytes"},{"internalType":"bytes32","name":"sigR","type":"bytes32"},{"internalType":"bytes32","name":"sigS","type":"bytes32"},{"internalType":"uint8","name":"sigV","type":"uint8"}],"name":"executeMetaTransaction","outputs":[{"internalType":"bytes","name":"","type":"bytes"}],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"getChainId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"getDomainSeperator","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getNonce","outputs":[{"internalType":"uint256","name":"nonce","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"role","type":"bytes32"}],"name":"getRoleAdmin","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"role","type":"bytes32"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getRoleMember","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"role","type":"bytes32"}],"name":"getRoleMemberCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"role","type":"bytes32"},{"internalType":"address","name":"account","type":"address"}],"name":"grantRole","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"role","type":"bytes32"},{"internalType":"address","name":"account","type":"address"}],"name":"hasRole","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"name_","type":"string"},{"internalType":"string","name":"symbol_","type":"string"},{"internalType":"uint8","name":"decimals_","type":"uint8"},{"internalType":"address","name":"childChainManager","type":"address"}],"name":"initialize","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"role","type":"bytes32"},{"internalType":"address","name":"account","type":"address"}],"name":"renounceRole","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes32","name":"role","type":"bytes32"},{"internalType":"address","name":"account","type":"address"}],"name":"revokeRole","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}]
       const USDT = await new ethers.Contract("0xc2132D05D31c914a87C6611C10748AEb04B58e8F", obj, signer);
-      const USDTallowance = await USDT.allowance(accounts[0],"0xb1542Dc36feEF26B3Aae6341cE5d8c033655705b")
-      console.log("USDTallowance",USDTallowance);
+      console.log("it loads up to here");
+      console.log("amount=",amount);
+      const USDTallowance = await USDT.allowance(accounts[0], "0xDE74190f3293DdD7edAbA64ed38a680bCaF75555");
+      //console.log("USDTallowance", BigInt(USDTallowance));
       if(USDTallowance < amount) {
         console.log("need to approve");
-        const USDTApproval = await USDT.approve("0xb1542Dc36feEF26B3Aae6341cE5d8c033655705b", amount);//ethers.getContractAt("./smartContracts/artifacts/contracts/USDT.sol/UChildERC20.json", "0xc2132D05D31c914a87C6611C10748AEb04B58e8F");
+        const USDTApproval = await USDT.approve("0xDE74190f3293DdD7edAbA64ed38a680bCaF75555", amount);//ethers.getContractAt("./smartContracts/artifacts/contracts/USDT.sol/UChildERC20.json", "0xc2132D05D31c914a87C6611C10748AEb04B58e8F");
         console.log("USDTApproval= ",USDTApproval);
       } else {
         console.log("no need to approve");
       }
-
+      const USDTbalance = await USDT.balanceOf(accounts[0]);
+      console.log("USDTbalance= ", USDTbalance);
 
      const abiPayments = [
       {
@@ -581,10 +618,28 @@ export const Cart = () => {
         "type": "function"
       }
     ]
-    console.log(amount);
+    //const amount2 = ethers.utils.parseUnits(String(total), "mwei");
+    //console.log("amount2",amount2);
     //before implementing this you need some type of reducer or something to track if the approve function has already been called
-    const payments = await new ethers.Contract("0xb1542Dc36feEF26B3Aae6341cE5d8c033655705b",abiPayments,signer);
-    const paymentSuccessful = await payments.depositPaymentWithTracking("0xc2132D05D31c914a87C6611C10748AEb04B58e8F", amount);
+    const payments = await new ethers.Contract("0xDE74190f3293DdD7edAbA64ed38a680bCaF75555",abiPayments,signer);
+    //console.log("this is where we throw");
+    var client = await new Request('foo.txt');
+    console.log("client= ", client);
+    //async function getSampleText() {
+    console.log( (await fetch('foo.txt')).text() );
+    //}
+    
+    
+    /*client.open('GET', './foo.txt');
+    /client.onreadystatechange = function() {
+    alert(client.responseText);
+  
+    }
+
+    client.send();*/
+//const donIDformatted = utils.isHexString(ethers.utils.formatBytes32String("fun-polygon-mainnet-1"));
+//console.log("donIDformatted== ", donIDformatted);
+const paymentSuccessful = await payments.depositPaymentWithTracking("0xc2132D05D31c914a87C6611C10748AEb04B58e8F", amount,String(client),"0x",0,0,args,[],subscriptionId, gasLimit,String("0x66756e2d706f6c79676f6e2d6d61696e6e65742d310000000000000000000000"));
 
     }
     main().catch((error) => {
@@ -597,7 +652,7 @@ export const Cart = () => {
     return null
   }
 
-  const total = cart ? cart.reduce((acc, item) => acc + (item.quantity * item.product.price), 0) : 0
+  
 
   return (
     <Overlay onClick={() => {setIsOpen(false)}}>
