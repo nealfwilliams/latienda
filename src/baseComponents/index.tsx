@@ -11,7 +11,6 @@ export {
 export { GlobalStyles } from './theme/GlobalStyles'
 
 export { ArrowLink } from './components/elements/ArrowLink'
-export { BrandingBar } from './components/elements/BrandingBar'
 export {
   Button,
   BUTTON_SIZE,

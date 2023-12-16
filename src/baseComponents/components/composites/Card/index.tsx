@@ -42,6 +42,8 @@ export type CardProps = StyledElementProps<
     layout?: CARD_LAYOUT
     size?: CARD_SIZE
     displayDate?: string
+    imageHeight?: string
+    imageWidth?: string
     onClick?: () => void
     raised?: boolean
   },
@@ -109,14 +111,12 @@ export const Card: React.FC<CardProps> = ({
   displayDate,
   headline,
   image,
+  imageHeight,
+  imageWidth,
   layout,
   onClick,
   raised,
   truncateHeadlineAfter,
-  heading,
-  headingStyles,
-  headingIcon,
-  headingAction,
   sx,
   children,
 }) => {
@@ -142,7 +142,7 @@ export const Card: React.FC<CardProps> = ({
   return (
     <Group
       {...anchorElementProps}
-      type={headline || heading ? GROUP_TYPE.REGION : GROUP_TYPE.GROUP}
+      type={headline ? GROUP_TYPE.REGION : GROUP_TYPE.GROUP}
       role={onClick ? 'button' : 'group'}
       onClick={onClick}
       onKeyDown={(e) => {
@@ -152,7 +152,7 @@ export const Card: React.FC<CardProps> = ({
       }}
       tabIndex={onClick ? 0 : undefined}
       sx={{
-        boxShadow: raised || heading ? theme.boxShadow.NORMAL : undefined,
+        boxShadow: raised ? theme.boxShadow.NORMAL : undefined,
         width: !isVertical && '100%',
         borderBottom: 'solid 2px',
         borderColor: COLOR.TRANSPARENT,
@@ -174,53 +174,19 @@ export const Card: React.FC<CardProps> = ({
         <img
           src={image}
           style={{
-            width: isVertical ? '100%' : 'auto',
-            height: isVertical ? 'auto' : '100%',
+            width: imageWidth || (isVertical ? '100%' : 'auto'),
+            height: imageHeight || (isVertical ? 'auto' : '100%'),
+            objectFit: 'cover',
           }}
         />
       )}
 
       {displayDate && <DateDisplay date={displayDate} />}
-      {heading && (
-        <Row
-          sx={{
-            bg: COLOR.PRIMARY,
-            color: COLOR.WHITE,
-            width: '100%',
-            px: contentPaddingX,
-            py: 3,
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            ...headingStyles,
-          }}
-        >
-          <Row>
-            {headingIcon && (
-              <Icon
-                icon={headingIcon}
-                size={FONT_SIZE.LG}
-                color={COLOR.WHITE}
-                sx={{ mr: 2 }}
-              />
-            )}
-            <Heading
-              size={HEADING_SIZE.SM}
-              sx={{
-                color: COLOR.WHITE,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {heading}
-            </Heading>
-          </Row>
-          <Row>{headingAction && headingAction}</Row>
-        </Row>
-      )}
 
       <Row sx={{ px: contentPaddingX, py: contentPaddingY }}>
-        <Column justify="center">
+        <Column align="flex-start">
           {headline && (
-            <Heading typography={typography} sx={{ textAlign: 'justify' }}>
+            <Heading typography={typography} sx={{width: "100%", textAlign: 'left'}}>
               {truncateHeadlineAfter ? (
                 <ReadMore
                   lines={truncateHeadlineAfter}
@@ -235,7 +201,7 @@ export const Card: React.FC<CardProps> = ({
             </Heading>
           )}
           {children && (
-            <Box sx={{ mt: headline && !heading ? 2 : 0 }}>
+            <Box sx={{ mt: headline ? 2 : 0 }}>
               {typeof children === 'function'
                 ? children({ isHovered, activeBackground })
                 : children}

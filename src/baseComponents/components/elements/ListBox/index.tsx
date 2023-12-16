@@ -1,10 +1,11 @@
 /** @jsxImportSource theme-ui */
-import React, { Key } from 'react'
+import React from 'react'
 import { COLOR } from '../../..'
 import { StyledElementProps } from '../../../theme'
-import { TYPOGRAPHY_TYPE, getTypographyStyles } from '../../../theme/typography'
+import { FONT_SIZE, TYPOGRAPHY_TYPE, getTypographyStyles } from '../../../theme/typography'
 import {
   BasicOption,
+  Key,
   RenderOption,
   defaultRenderOption,
   getOptionId,
@@ -57,6 +58,8 @@ function ListBoxInner<
         borderColor: COLOR.LIGHT_GRAY,
         backgroundColor: COLOR.BACKGROUND,
         boxShadow: '0px 0px 8px 2px #dddddd',
+        maxHeight: '400px',
+        overflowY: 'scroll',
         ...typography,
         ...sx,
       }}
@@ -74,8 +77,8 @@ function ListBoxInner<
           onClick={option.onClick}
           onMouseDown={() => selectOption && selectOption(option)}
           sx={{
-            px: 4,
-            py: 3,
+            px: 3,
+            py: 1,
             backgroundColor:
               focused === option.value
                 ? COLOR.EXTRA_EXTRA_LIGHT_GRAY
@@ -83,6 +86,7 @@ function ListBoxInner<
             cursor: 'pointer',
             borderBottom: 'solid 1px',
             borderBottomColor: COLOR.LIGHT_GRAY,
+            fontSize: FONT_SIZE.SM,
             color: COLOR.TEXT,
             ':last-of-type': {
               borderBottom: 'none',

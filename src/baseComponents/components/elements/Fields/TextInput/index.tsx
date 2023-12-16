@@ -52,11 +52,13 @@ export type TextInputProps = StyledElementProps<
   HTMLInputElement,
   {
     size?: INPUT_SIZE
+    min?: number
     leftIcon?: React.FC<any>
     inline?: boolean
     inverted?: boolean
     label?: string
     disabled?: boolean
+    type?: string
     value: string
     onChange?: (value: string) => void
     onChangeRaw?: (e: string | React.ChangeEvent) => void
