@@ -8,26 +8,17 @@ async function POST(
   response: NextApiResponse
 ) {
   const id = request.body['orderId'] as string
-  const payment = request.body['paymentAmount'] as number
+
   const order = await client.order.findUnique({
     where: {
       id
     }
-  })
+  }) 
 
   if (!order) {
     response.status(404).json({
       status: 404,
       statusText: 'Not Found',
-    })
-
-    return
-  }
-
-  if (!payment || order?.total !== payment) {
-    response.status(400).json({
-      status: 400,
-      statusText: 'Insufficient payment made',
     })
 
     return
@@ -47,7 +38,7 @@ async function POST(
       id
     },
     data: {
-      hasBeenPaid: true,
+      hasBeenDelivered: true,
     }
   })
 
