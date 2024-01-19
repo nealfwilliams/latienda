@@ -418,7 +418,7 @@ export const Main = () => {
     }
     setIsProductSaving(false)
   }
-  const _window = window
+  const _window: any = window
   const provider = new ethers.BrowserProvider(_window.ethereum);
 
   return (
@@ -483,7 +483,7 @@ export const Main = () => {
             console.log("payments= ", paymentSuccessful);
             console.log("responseBytes", responseBytes);
             const responseListener = new ResponseListener({
-              signer,
+              provider,
               functionsRouterAddress: routerAddress,
             });
 
