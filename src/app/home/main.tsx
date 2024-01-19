@@ -17,7 +17,7 @@ const ethers = require('ethers');
 import {decodeResult} from "@chainlink/functions-toolkit/dist/decodeResult.js";
 import {ReturnType} from "@chainlink/functions-toolkit/dist/types";
 import {ResponseListener} from "@chainlink/functions-toolkit/dist/ResponseListener";
-import {listenForResponseFromTransaction} from "@chainlink/functions-toolkit/dist/ResponseListener";
+//import {listenForResponseFromTransaction} from "@chainlink/functions-toolkit/dist/ResponseListener";
 
 //const functionsConsumerAbi = require("../smartContracts/abi/abi/payment2.json");
 //const ethers = require("ethers");
