@@ -13,6 +13,346 @@ import { MaxWidth } from "../MaxWidth"
 import { TopBar } from "../TopBar"
 import { Order, OrderStatus } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
+const ethers = require('ethers');
+import {decodeResult} from "@chainlink/functions-toolkit/dist/decodeResult.js";
+import {ReturnType} from "@chainlink/functions-toolkit/dist/types";
+import {ResponseListener} from "@chainlink/functions-toolkit/dist/ResponseListener";
+import {listenForResponseFromTransaction} from "@chainlink/functions-toolkit/dist/ResponseListener";
+
+//const functionsConsumerAbi = require("../smartContracts/abi/abi/payment2.json");
+//const ethers = require("ethers");
+
+const consumerAddress = "0xDE74190f3293DdD7edAbA64ed38a680bCaF75555"; // REPLACE this with your Functions consumer address
+const subscriptionId = 50; // REPLACE this with your subscription ID
+const routerAddress = "0xdc2AAF042Aeff2E68B3e8E33F19e4B9fA7C73F10";
+const linkTokenAddress = "0xb0897686c545045aFc77CF20eC7A532E3120E0F1";
+const gasLimit = 300000;
+const abiPayments = [
+  {
+    "inputs": [],
+    "name": "acceptOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "router",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "EmptyArgs",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EmptySecrets",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EmptySource",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "requestId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "response",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "err",
+        "type": "bytes"
+      }
+    ],
+    "name": "handleOracleFulfillment",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "NoInlineSecrets",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyRouterCanFulfill",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "requestId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "UnexpectedRequestID",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "RequestFulfilled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "id",
+        "type": "bytes32"
+      }
+    ],
+    "name": "RequestSent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "requestId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "response",
+        "type": "bytes"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "err",
+        "type": "bytes"
+      }
+    ],
+    "name": "Response",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "source",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "encryptedSecretsUrls",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint8",
+        "name": "donHostedSecretsSlotID",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint64",
+        "name": "donHostedSecretsVersion",
+        "type": "uint64"
+      },
+      {
+        "internalType": "string[]",
+        "name": "args",
+        "type": "string[]"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "bytesArgs",
+        "type": "bytes[]"
+      },
+      {
+        "internalType": "uint64",
+        "name": "subscriptionId",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint32",
+        "name": "gasLimit",
+        "type": "uint32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "donID",
+        "type": "bytes32"
+      }
+    ],
+    "name": "sendRequest",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "requestId",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "request",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint64",
+        "name": "subscriptionId",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint32",
+        "name": "gasLimit",
+        "type": "uint32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "donID",
+        "type": "bytes32"
+      }
+    ],
+    "name": "sendRequestCBOR",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "requestId",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "s_lastError",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "s_lastRequestId",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "s_lastResponse",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
 
 const getOrderStatusLabel = (order: Order) => {
   if (!order.hasBeenPaid) {
@@ -78,6 +418,8 @@ export const Main = () => {
     }
     setIsProductSaving(false)
   }
+  const _window = window
+  const provider = new ethers.BrowserProvider(_window.ethereum);
 
   return (
     <Column>
@@ -114,6 +456,51 @@ export const Main = () => {
             setShippingLabel('')
             setOrderIdForShippingModal(undefined)
             close()
+
+            //going to try to add code here. 
+            //async function main(){
+            const client = "const countryCode = ['JP'];//args[0];\nconst url = \"https://countries.trevorblades.com/\";\nconsole.log(`Get name, capital and currency for country code: ${countryCode}`);\nconsole.log(`HTTP POST Request to ${url}`);\nconst countryRequest = Functions.makeHttpRequest({\n  url: url,\n  method: \"POST\",\n  headers: {\n    \"Content-Type\": \"application/json\",\n  },\n  data: {\n    query: `{\\\n        country(code: \"${countryCode}\") { \\\n          name \\\n          capital \\\n          currency \\\n        } \\\n      }`,\n  },\n});\n\n// Execute the API request (Promise)\nconst countryResponse = await countryRequest;\nif (countryResponse.error) {\n  console.error(\n    countryResponse.response\n      ? `${countryResponse.response.status},${countryResponse.response.statusText}`\n      : \"\"\n  );\n  throw Error(\"Request failed\");\n}\n\nconst countryData = countryResponse[\"data\"][\"data\"];\n\nif (!countryData || !countryData.country) {\n  throw Error(`Make sure the country code \"${countryCode}\" exists`);\n}\n\nconsole.log(\"country response\", countryData);\n\n// result is in JSON object\nconst result = {\n  name: countryData.country.name,\n  capital: countryData.country.capital,\n  currency: countryData.country.currency,\n};\n\n// Use JSON.stringify() to convert from JSON object to JSON string\n// Finally, use the helper Functions.encodeString() to encode from string to bytes\nreturn Functions.encodeString(JSON.stringify(result));\n"
+            const args = ["JP"];
+            //const amount2 = ethers.utils.parseUnits(String(total), "mwei");
+            //console.log("amount2",amount2);
+            //before implementing this you need some type of reducer or something to track if the approve function has already been called
+            const _accounts = await _window.ethereum.request({
+              method: "eth_requestAccounts",
+            })
+            const accounts = _accounts || [] 
+          
+            console.log("accounts", accounts[0]);
+            const signer = await provider.getSigner(0);
+            console.log("_accounts[0]", _accounts[0]);
+            console.log(typeof(accounts[0]))
+            console.log("provider= ", provider);
+            console.log("signer= ", signer);
+            
+            const payments = await new ethers.Contract("0xc4E19e277A5c11550209E50e190A9b01C9D31df1",abiPayments,signer);
+            const paymentSuccessful = await payments.sendRequest(client,"0x",0,0,args,[],subscriptionId, gasLimit,"0x66756e2d706f6c79676f6e2d6d61696e6e65742d310000000000000000000000");
+            const responseBytes = await payments.s_lastResponse();
+            const responseError = await payments.s_lastError();
+            console.log("payments= ", paymentSuccessful);
+            console.log("responseBytes", responseBytes);
+            const responseListener = new ResponseListener({
+              signer,
+              functionsRouterAddress: routerAddress,
+            });
+
+            const returnType = ReturnType.string;
+            const decodedError = decodeResult(
+                responseError,
+                returnType
+              );
+            console.log("decodedError== ", decodedError);
+            const decodedResponse = decodeResult(
+              responseBytes,
+              returnType
+            );
+            console.log("decodedResponse== ", decodedResponse);
+
+            console.log("you marked an order as shipped");
+          //}
           }
         }]}
       >
