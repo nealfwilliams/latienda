@@ -45,7 +45,7 @@ console.log(order?.shippingLabel)
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'x-merchant-id': 'G2504G',
-          Authorization: 'Basic ' + Buffer.from(process.env.USERNAME:process.env.PASSWORD).toString('base64')
+          Authorization: 'Basic ' + Buffer.from(String(process.env.USERNAME_PASSWORD)).toString('base64')
         },
         body: new URLSearchParams(formData).toString()
       }
