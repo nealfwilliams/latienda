@@ -19,12 +19,10 @@ export default async function handler(
 
     } else {
       try {
-        const key = await createKey()
-        res.status(200).json({ key })
-
+        const key  = await createKey()
+        res.status(200).json({key})
       } catch(e) {
         console.error(e)
-
         res.status(500).json({
           status: 500,
           statusText: 'Internal Server Error',
